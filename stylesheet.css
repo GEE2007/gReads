@@ -62,3 +62,141 @@
     transform: scale(1.1);
     transition: 0.2s ease;
 }
+.hero{
+    min-height: 60vh;
+    padding: 100px 20px 60px;
+    background: linear-gradient(to bottom,#fdf6f0 0%,#f2dddd 60%,#fffafc 100%);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+.hero-content {
+    max-width: 600px;
+     margin-top: 60px;
+}
+.hero-content h1 {
+    font-size: 3rem;        
+    line-height: 1.15;      
+    letter-spacing: -0.5px;
+    color: #4b3f3f;
+    margin-bottom: 15px;
+    font-family: 'Georgia', serif;
+    line-height: 1.2;
+}
+.hero-content p {
+    font-size: 1.1rem;
+    color: #7a6a6a;
+    margin-bottom: 30px;
+}
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.btn-primary {
+    background-color: #c98c94;
+    border: 2px solid #c98c94;
+    padding: 12px 28px;
+    border-radius: 30px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: whitesmoke;
+    color: #4b3f3f;
+    border: 2px solid #c98c94;
+    transform: translateY(-3px);
+}
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid #c98c94;
+    padding: 12px 28px;
+    border-radius: 30px;
+    color: #4b3f3f;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.btn-secondary:hover {
+    background-color: #c98c94;
+    border: 2px solid #c98c94;
+    color: whitesmoke;
+    transform: translateY(-3px);
+}
+.hero-buttons button {
+    min-width: 160px;
+}
+.explore-preview {
+    padding: 50px 40px;
+    text-align: center;
+    background-color: #fff6f8; ; 
+}
+
+.explore-preview h2 {
+    margin-top: 20px;
+    font-family: 'Georgia', serif;
+    font-size: 2rem;
+    font-weight: 500px;
+    color: #4b3f3f;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.genre-pills {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 14px 36px;
+    border-radius: 50px;
+    border: 1px solid #e8cdd0;
+    background-color: white;
+    font-size: 1rem;
+    color: #4b3f3f;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pill:hover {
+    background-color: #f8e4e7;
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+.subtext {
+    text-align: center;
+    color: #8a7a7a;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+.scroll-indicator {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: #7a6a6a;
+    font-size: 0.9rem;
+    animation: fadeBounce 2s infinite;
+}
+
+.arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #7a6a6a;
+    border-bottom: 2px solid #7a6a6a;
+    transform: rotate(45deg);
+    margin: 5px auto;
+}
+
+@keyframes fadeBounce {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, 0); }
+    50% { opacity: 1; transform: translate(-50%, 8px); }
+}
