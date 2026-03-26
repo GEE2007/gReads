@@ -17,7 +17,7 @@
             <div class ="navlinks">
                 <a href="#">Home</a>
                 <a href="#">Genre</a>
-                <a href="#">Explore</a>
+                <a href="explore.html">Explore</a>
                 <a href="#">Trending</a>
                 <a href="#">My Books</a>
             </div>
@@ -30,47 +30,60 @@
             <h1>Why sleep when you can read your dreams?</h1>
             <p>Because one more chapter is never enough.</p>
             <div class="hero-buttons">
-                <button class="btn-primary">Start Browsing</button>
+                <button class="btn-primary" onclick="location.href='explore.html'">
+                Explore Books
+                </button>
                 <button class="btn-secondary">View All Genres</button>
             </div>
         </div>
     </section>
     <section class="explore-preview">
-    <h2>Curated reads, just for you</h2>
-    <p class="subtext">Pick a vibe, we’ll handle the rest ✨</p>
+    <h2>Pick your vibe</h2>
+    <p class="subtext">We’ll handle the rest ✨</p>
     <div class="genre-pills">
         <button class="pill">💗 Romance</button>
     <button class="pill">🐉 Fantasy</button>
     <button class="pill">🔪 Thriller</button>
     <button class="pill">🌱 Self Help</button>
     <div class="scroll-indicator">
-    <span>Explore more</span>
+    <span>Browse by Genre</span>
     <div class="arrow"></div>
     </div>
     </div>
     </section>
-    <!-- <section class=""featured>
-        <h2>Trending this week</h2>
-        <div class="book grid">
-            <div class="book card">
-                <div class="book cover">
-                <h3>The Silent Patient</h3>
-                <p>Psychological Thriller</p>
-                </div>
-            </div>
-            <div class="book card">
-                <div class="book cover">
-                <h3>Love & Other Words</h3>
-                <p>Romance</p>
-                </div>
-            </div>
-            <div class="book card">
-                <div class="book cover">
-                <h3>Harry Potter</h3>
-                <p>Fantasy</p>
-                </div>
-            </div>
+    <section class="books">
+    <h2>Trending Now</h2>
+
+    <div class="book-container">
+
+        <div class="book-card">
+            <img src="images/rightmove.jpg">
+            <h3>The Right Move</h3>
+            <p>Romance</p>
         </div>
-    </section> -->
+
+        <div class="book-card">
+            <img src="images/emperor.webp">
+            <h3>The Emperor</h3>
+            <p>Thriller</p>
+        </div>
+
+        <div class="book-card">
+            <img src="images/fourthwing.png">
+            <h3>Fourth Wing</h3>
+            <p>Fantasy</p>
+        </div>
+
+        <div class="book-card">
+            <img src="images/atomichabits.jpg">
+            <h3>Atomic Habits</h3>
+            <p>Self-help</p>
+        </div>
+
+    </div>
+</section>
+<footer class="footer">
+    <p>© 2026 geeReads. Made with ❤️</p>
+</footer>
 </body>
 </html>
