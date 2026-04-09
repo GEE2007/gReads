@@ -221,36 +221,38 @@
 }
 
 .book-card {
-    width: 150px;
-    background-color: white;
-    border-radius: 15px;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  min-width: 200px;
+  max-width: 200px;
+  flex-shrink: 0;
+  background: transparent;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: none;
 }
 
 .book-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;   /* FIXES CROPPING */
+  background-color: white;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
 }
-
+.book-card:hover img {
+  transform: scale(1.08);
+}
 .book-card h3 {
-    font-size: 0.95rem;
-    margin-top: 10px;
-    color: #4b3f3f;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  color: #4b3f3f;
 }
-
 .book-card p {
-    font-size: 0.8rem;
-    color: #a38c8c;
+  display: none;
 }
-
 .book-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+    transform: scale(1.05);
 }
 .footer {
     text-align: center;
@@ -260,69 +262,143 @@
     font-size: 0.9rem;
     margin-top: 20px;
 }
+/* BACKGROUND */
+#explore-body {
+   background: linear-gradient(to bottom, #fffafc, #f8e4e7);
+  min-height: 100vh;
+}
+
+/* PAGE */
 .explore-page {
-  padding: 60px 20px 60 px;
   text-align: center;
-  background: linear-gradient(to bottom, #fffafc, #f8e4e7);
+  padding: 30px 20px;
 }
 
-.explore-page h1 {
-  font-family: 'Georgia', serif;
-  font-size: 2.5rem;
-  color: #4b3f3f;
-  background: #fffafc;
-   margin-top: 20px;
+/* SWIPE AREA */
+.swipe-wrapper {
+  position: relative;
+  width: 320px;
+  height: 480px;
+  margin: 40px auto;
+  overflow: hidden;
 }
 
-.subtext {
-  color: #8a7a7a;
-  margin-top: 10px;
-}
-
-.explore-container {;
-  margin-top: 50px;
-  padding: 0 40px 120px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 30px;
-}
-
-.explore-card {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  text-align: center;
-}
-
-.explore-card img {
+.swipe-card {
+  position: absolute;
   width: 100%;
-  aspect-ratio: 2 / 3;
+  height: 100%;
+
+  /* REMOVE harsh card look */
+  background: transparent;
+  border-radius: 25px;
+  box-shadow: none;
+
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+/* ACTIVE CARD */
+.swipe-card.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 10;
+}
+
+/* IMAGE */
+.swipe-card img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  overflow: hidden; 
-  border-radius: 4px;
-  margin-bottom: 10px;
+  border-radius: 20px;
+
+  /* soft glow instead of box */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
 }
 
-.explore-card h3 {
-  font-size: 0.95rem;
+/* TEXT */
+.swipe-card h3,
+.swipe-card p {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  color: white;
+  text-align: left;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.swipe-card h3 {
+  bottom: 55px;
+  font-size: 18px;
+  font-weight: 600;
+  z-index: 2;
+  letter-spacing: 0.3px;
+}
+
+.swipe-card p {
+  bottom: 20px;
+  font-size: 14px;
+  z-index: 2;
+  color: #f1f1f1;
+}
+
+/* FEEDBACK POPUP */
+.tbr-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  color: white;
+  padding: 15px 25px;
+  background: rgba(50, 30, 30, 0.75); /* warmer tone */
+  backdrop-filter: blur(6px);
+  border-radius: 25px;
+  font-size: 16px;
+  opacity: 0;
+  transition: all 0.5s ease;;
+}
+
+.tbr-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+.swipe-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  border-radius: 20px;
+
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.85),
+    rgba(0,0,0,0.4),
+    transparent
+  );
+}
+.swipe-card.active:hover {
+  transform: scale(1.02);
+}
+.hint {
+  font-size: 13px;
+  color: #777;
   margin-top: 10px;
-  color: #4b3f3f;
 }
 
-.explore-card p {
-  font-size: 0.8rem;
-  color: #a38c8c;
-}
-.explore-card:hover img {
-  transform: scale(1.05); 
-}
-.explore-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
-}
+
 .fourth {
   object-fit: contain;
   transform: scale(1.1);
 }
+
+
+
+
