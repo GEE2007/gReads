@@ -1,27 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div class="book-detail">
-  <img src="images/fourthwing.png">
-  
-  <div class="book-info">
-    <h1>Fourth Wing</h1>
-    <p class="author">Rebecca Yarros</p>
-    <p class="genre">Fantasy</p>
-    
-    <p class="description">
-      A thrilling fantasy romance set in a brutal dragon rider academy...
-    </p>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book</title>
+  <link rel="stylesheet" href="stylesheet.css">
+  </head>
+  <header>
+    <div class="navbar">
+        <div class="navlogo border">
+            <div class="logo"></div>
+        </div>
 
-    <button class="btn-primary">Read / Buy</button>
-    <button class="btn-secondary">Add to My Books</button>
+        <div class="navlinks">
+            <a href="index.html">Home</a>
+            <a href="genre.html">Genre</a>
+            <a href="explore.html">Explore</a>
+            <a href="#">Trending</a>
+            <a href="#">My Books</a>
+        </div>
+
+        <div class="profile"></div>
+    </div>
+</header>
+<body>
+    <div class="book-page">
+
+  <div class="left">
+    <img class="book-img" alt="Book Cover">
+  </div>
+
+  <div class="right">
+
+    <h1 class="book-title"></h1>
+    <p class="author"></p>
+    <div class="tags"></div>
+    <div class="tropes"></div>
+    <p class="book-desc"></p>
+
+    <div class="rating">⭐⭐⭐⭐☆</div>
+
+    <div class="actions">
+  <button class="tbr-btn">Add to TBR</button>
+  <button class="read-btn">Mark as Read</button>
+</div>
+<div class="playlist">
+ <h3>Reading Vibes 🎵</h3>
+ <a class="playlist-link" target="_blank">Open Playlist</a>
+</div>
+
+<div class="reviews">
+  <h3>Reviews</h3>
+  <p>“Couldn’t put this down.”</p>
+  <p>“One more chapter became five.”</p>
+  <p>“Now emotionally attached.”</p>
+</div>
   </div>
 </div>
-    
+<script src="book.js"></script>
 </body>
 </html>
