@@ -5,7 +5,8 @@ const books = [
     desc: "Dragons, danger, and enemies who might ruin you",
     genre: ["Romance","Fantasy"],
     tropes: ["Enemies to Lovers", "Dragons", "War College", "Slow Burn"],
-    author: "Rebecca Yarros"
+    author: "Rebecca Yarros",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "Atomic Habits",
@@ -13,7 +14,8 @@ const books = [
     desc: "Fix your life one tiny habit at a time",
     genre: ["Self-Help"],
     tropes: ["Habit Formation", "Behavior Change", "Self-Improvement", "Productivity"],
-    author: "James Clear"
+    author: "James Clear",
+     playlist:"https://open.spotify.com/playlist/abc123"
 
   },
   {
@@ -22,7 +24,8 @@ const books = [
     desc: "Grumpy x sunshine with slow-burn tension",
     genre: ["Romance"],
     tropes: ["Grumpy x Sunshine", "Slow Burn", "Fake Dating", "Second Chance Romance"],
-    author: "Liz Tomforde"
+    author: "Liz Tomforde",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "Harry Potter",
@@ -30,7 +33,8 @@ const books = [
     desc: "Magic, friendship, and a world you won’t leave",
     genre:  ["Fantasy"],
     tropes: ["Magic School", "Chosen One", "Friendship", "Adventure"],
-    author: "J.K. Rowling"
+    author: "J.K. Rowling",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "A Good Girl's Guide to Murder",
@@ -38,7 +42,8 @@ const books = [
     desc: "A gripping mystery with a strong female protagonist",
     genre:  ["Thriller"],
     tropes: ["Gripping Mystery", "Strong Female Protagonist"],
-    author: "Holly Jackson"
+    author: "Holly Jackson",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "Iron Flame",
@@ -46,7 +51,8 @@ const books = [
     desc: "A thrilling tale of magic and adventure",
     genre: ["Fantasy","Romance"],
     tropes: ["Magic", "Adventure", "Romance"],
-    author: "Rebecca Yarros"
+    author: "Rebecca Yarros",
+    playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "No Excuses",
@@ -54,7 +60,8 @@ const books = [
     desc: "Discipline over motivation. No shortcuts",
     genre:  ["Self-Help"],
     tropes: ["Discipline", "Motivation", "Self-Improvement"],
-    author: "Ryan Holiday"
+    author: "Ryan Holiday",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "We'll Always Have Summer",
@@ -62,7 +69,8 @@ const books = [
     desc: "Love, heartbreak, and choices that hurt",
     genre: ["Young Adult","Romance"],
     tropes: ["Love", "Heartbreak", "Choices"],
-    author: "Jenny Han"
+    author: "Jenny Han",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "People We Meet on Vacation",
@@ -70,7 +78,8 @@ const books = [
     desc: "Best friends, missed chances, and one last trip",
     genre: ["Romance"],
     tropes: ["Best Friends", "Missed Chances", "Last Trip"],
-    author: "Emily Henry"
+    author: "Emily Henry",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "Powerless",
@@ -78,42 +87,48 @@ const books = [
     desc: "Forbidden power and a world that wants you gone",
     genre: ["Romance","Fantasy"],
     tropes: ["Forbidden Power", "Dystopian World", "Romance"],
-    author: "Emily Henry"
+    author: "Emily Henry",
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "The Emperor",
     image: "images/emperor.webp",
     desc: "A romance where staying alive and staying in love are equally risky",
     genre: ["Romance","Thriller"],
-    tropes: ["Romance", "Thriller", "Survival", "Dangerous Love"]
+    tropes: ["Romance", "Thriller", "Survival", "Dangerous Love"],
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "Better Than the Movies",
     image: "images/betterThanTheMovies.png",
     desc: "A rom-com girlie chasing her movie moment… but life said plot twist",
     genre: ["Young Adult","Romance"],
-    tropes: ["Rom-Com", "Chasing Dreams", "Plot Twist", "Young Adult Romance"]  
+    tropes: ["Rom-Com", "Chasing Dreams", "Plot Twist", "Young Adult Romance"],
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "The 48 Laws of Power",
     image: "images/power.png",
     desc: "Play the game… or get played",
     genre: ["Self-Help"],
-    tropes: ["Power Dynamics", "Strategy", "Manipulation", "Self-Improvement"]  
+    tropes: ["Power Dynamics", "Strategy", "Manipulation", "Self-Improvement"],
+      playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "The Summer I Turned Pretty",
     image: "images/summerTurnedPretty.png",
     desc: "Summer love, messy feelings, growing up",
     genre: ["Young Adult","Romance"],
-    tropes: ["Summer Love", "Messy Feelings", "Growing Up"]
+    tropes: ["Summer Love", "Messy Feelings", "Growing Up"],
+     playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
     title: "The Housemaid",
     image: "images/theHousemaid.png",
     desc: "She knows too much… and it’s terrifying",
     genre: ["Mystery","Thriller"],
-    tropes: ["Mystery", "Thriller", "Suspense", "Dark Secrets"] 
+    tropes: ["Mystery", "Thriller", "Suspense", "Dark Secrets"],
+     playlist:"https://open.spotify.com/playlist/abc123" 
   }
 
 ];
@@ -199,4 +214,3 @@ window.onload = () => {
     if (e.key === "ArrowLeft") swipeLeft();
   });
 };
-playlist:"https://open.spotify.com/..."

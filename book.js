@@ -12,8 +12,6 @@ const genres = document.querySelector(".tags");
 img.src = book.image;
 title.textContent = book.title;
 desc.textContent = book.desc;
-
-// show genres
 book.genre.forEach(g => {
   const span = document.createElement("span");
   span.textContent = g;
@@ -35,23 +33,16 @@ tbrBtn.addEventListener("click", () => {
     tbrBtn.textContent = "Already Added ";
   }
 });
-const tropesBox = document.querySelector(".tropes");
-
-if(book.tropes){
-  book.tropes.forEach(trope=>{
-    const span=document.createElement("span");
-    span.textContent=trope;
-    span.classList.add("trope-tag");
-    tropesBox.appendChild(span);
-  });
-}
 const author = document.querySelector(".author");
 author.textContent = "by " + book.author;
 const tropesBox = document.querySelector(".tropes");
 
-book.tropes.forEach(trope=>{
- const span=document.createElement("span");
- span.textContent=trope;
- span.classList.add("trope-tag");
- tropesBox.appendChild(span);
-});
+if(book.tropes){
+  book.tropes.forEach(trope => {
+    const span = document.createElement("span");
+    span.textContent = trope;
+    span.classList.add("trope-tag");
+    tropesBox.appendChild(span);
+  });
+}
+document.querySelector(".playlist-link").href = book.playlist;
