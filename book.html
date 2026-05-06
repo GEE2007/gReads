@@ -49,11 +49,26 @@
  <a class="playlist-link" target="_blank">Open Playlist</a>
 </div>
 
+<div class="review-form">
+  <h3>Write a Review</h3>
+  <div class="review-rating-input">
+    <span class="review-rating-label">Your rating</span>
+    <div class="review-stars" role="radiogroup" aria-label="Star rating selector">
+      <span class="review-star" data-value="1">☆</span>
+      <span class="review-star" data-value="2">☆</span>
+      <span class="review-star" data-value="3">☆</span>
+      <span class="review-star" data-value="4">☆</span>
+      <span class="review-star" data-value="5">☆</span>
+    </div>
+  </div>
+  <label class="review-text-label" for="review-textarea">Review</label>
+  <textarea id="review-textarea" class="review-textarea" rows="4" placeholder="Share your thoughts about the book..."></textarea>
+  <button class="submit-review-btn" type="button">Submit Review</button>
+</div>
+
 <div class="reviews">
   <h3>Reviews</h3>
-  <p>“Couldn’t put this down.”</p>
-  <p>“One more chapter became five.”</p>
-  <p>“Now emotionally attached.”</p>
+  <div class="reviews-container"></div>
 </div>
   </div>
 </div>
