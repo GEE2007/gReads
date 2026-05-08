@@ -195,7 +195,21 @@ window.onload = () => {
       popup.classList.remove("show");
     }, 2200);
   }
-  function swipeRight(){
+  function swipeRight() {
+  let tbr = JSON.parse(localStorage.getItem("tbr")) || [];
+
+  const currentBook = books[current];
+
+  const exists = tbr.some(item => item.title === currentBook.title);
+
+  if (!exists) {
+    tbr.push(currentBook);
+    localStorage.setItem("tbr", JSON.stringify(tbr));
+    popup.textContent = "Added to TBR 💖";
+  } else {
+    popup.textContent = "Already in TBR ";
+  }
+
   showPopup();
 
   setTimeout(() => {

@@ -10,20 +10,31 @@
 <body id="explore-body">
 <header>
     <div class="navbar">
-        <div class="navlogo border">
-            <div class="logo"></div>
+            <div class="navlogo border">
+                <div class="logo"></div>
+            </div>
+            <nav class="navlinks">
+                <a href="#">Home</a>
+                <a href="genre.html">Genre</a>
+                <a href="explore.html">Explore</a>
+                <a href="#">Trending</a>
+                <a href="#">My Books</a>
+            </nav>
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search books, authors, genres...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="profile-menu">
+                <div class="profile-icon" id="profileToggle" aria-haspopup="true" aria-expanded="false">GB</div>
+                <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+                    <a href="#" role="menuitem">My Profile</a>
+                    <a href="tbr.html" role="menuitem">TBR</a>
+                    <a href="#" role="menuitem">My Library</a>
+                    <a href="#" role="menuitem">Settings</a>
+                    <a href="#" role="menuitem">Logout</a>
+                </div>
+            </div>
         </div>
-
-        <div class="navlinks">
-            <a href="index.html">Home</a>
-            <a href="genre.html">Genre</a>
-            <a href="explore.html">Explore</a>
-            <a href="#">Trending</a>
-            <a href="#">My Books</a>
-        </div>
-
-        <div class="profile"></div>
-    </div>
 </header>
 <section class="explore-page">
   <h1>Explore Books</h1>
@@ -41,5 +52,31 @@
   <p>© 2026 geeReads. Made with ❤️</p>
 </footer>
 <script src="script.js"></script>
+<script>
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu = document.querySelector('.profile-menu');
+        const closeProfileMenu = () => {
+            profileMenu.classList.remove('open');
+            profileToggle.setAttribute('aria-expanded', 'false');
+        };
+
+        profileToggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isOpen = profileMenu.classList.toggle('open');
+            profileToggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!profileMenu.contains(event.target)) {
+                closeProfileMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeProfileMenu();
+            }
+        });
+    </script>
 </body>
 </html>

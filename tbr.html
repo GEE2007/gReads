@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My TBR — geeReads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="stylesheet.css">
+  <link rel="stylesheet" href="tbr.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="navlogo border">
+        <div class="logo"></div>
+      </div>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="genre.html">Genre</a>
+        <a href="explore.html">Explore</a>
+        <a href="#">Trending</a>
+        <a href="#">My Books</a>
+      </nav>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search books, authors, genres...">
+        <i class="fas fa-search search-icon"></i>
+      </div>
+      <div class="profile-menu">
+        <div class="profile-icon" id="profileToggle" aria-haspopup="true" aria-expanded="false">GB</div>
+        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+          <a href="#" role="menuitem">My Profile</a>
+          <a href="tbr.html" role="menuitem">TBR</a>
+          <a href="#" role="menuitem">My Library</a>
+          <a href="#" role="menuitem">Settings</a>
+          <a href="#" role="menuitem">Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="tbr-main">
+    <div class="tbr-header">
+      <h1>My TBR </h1>
+      <p>Books waiting for you</p>
+    </div>
+    <div id="tbrContent"></div>
+  </main>
+    <footer class="footer">
+        <p>© 2026 geeReads. Made with ❤️</p>
+    </footer>
+    <script src="tbr.js"></script>
+</body>
+</html>
