@@ -31,7 +31,7 @@ const books = [
     title: "Harry Potter",
     image: "images/harry potter.png",
     desc: "Magic, friendship, and a world you won’t leave",
-    genre:  ["Fantasy"],
+    genre:  ["Fantasy","Young Adult"],
     tropes: ["Magic School", "Chosen One", "Friendship", "Adventure"],
     author: "J.K. Rowling",
      playlist:"https://open.spotify.com/playlist/abc123"
@@ -40,7 +40,7 @@ const books = [
     title: "A Good Girl's Guide to Murder",
     image: "images/girl'sGuideToMurder.png",
     desc: "A gripping mystery with a strong female protagonist",
-    genre:  ["Thriller"],
+    genre:  ["Thriller","Mystery"],
     tropes: ["Gripping Mystery", "Strong Female Protagonist"],
     author: "Holly Jackson",
      playlist:"https://open.spotify.com/playlist/abc123"
@@ -100,7 +100,7 @@ const books = [
   },
   {
     title: "Better Than the Movies",
-    image: "images/betterThanTheMovies.png",
+    image: "images/betterThanMovies.png",
     desc: "A rom-com girlie chasing her movie moment… but life said plot twist",
     genre: ["Young Adult","Romance"],
     tropes: ["Rom-Com", "Chasing Dreams", "Plot Twist", "Young Adult Romance"],
@@ -116,7 +116,7 @@ const books = [
   },
   {
     title: "The Summer I Turned Pretty",
-    image: "images/summerTurnedPretty.png",
+    image: "images/summerITurnedPretty.png",
     desc: "Summer love, messy feelings, growing up",
     genre: ["Young Adult","Romance"],
     tropes: ["Summer Love", "Messy Feelings", "Growing Up"],

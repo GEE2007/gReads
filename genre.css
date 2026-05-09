@@ -1,0 +1,222 @@
+/* Genre Page - Netflix Style */
+
+.genre-main {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 50px 20px 60px;
+}
+
+.genre-hero {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.genre-hero h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.8rem;
+  font-family: Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  color: #2a2629;
+}
+
+.genre-hero p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #6d6570;
+  font-weight: 400;
+}
+
+.genre-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.genre-section {
+  position: relative;
+}
+
+.genre-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: #2a2629;
+  letter-spacing: -0.3px;
+}
+
+.genre-row-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 8px 4px 8px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.genre-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.genre-book-item {
+  flex: 0 0 190px;
+  cursor: pointer;
+}
+
+.genre-book-cover {
+  width: 100%;
+  height: auto;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 3 / 4.2;
+  margin-bottom: 8px;
+}
+
+.genre-book-item:hover .genre-book-cover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.genre-book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.genre-book-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.genre-book-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2a2629;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.genre-book-author {
+  font-size: 0.8rem;
+  color: #8a7f82;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.genre-book-rating {
+  font-size: 0.8rem;
+  color: #6d6570;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .genre-main {
+    padding: 40px 16px 50px;
+  }
+
+  .genre-hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .genre-book-item {
+    flex: 0 0 160px;
+  }
+
+  .genre-rows {
+    gap: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .genre-main {
+    padding: 32px 12px 40px;
+  }
+
+  .genre-hero h1 {
+    font-size: 2rem;
+  }
+
+  .genre-hero p {
+    font-size: 1rem;
+  }
+
+  .genre-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+
+  .genre-book-item {
+    flex: 0 0 140px;
+  }
+
+  .genre-book-title {
+    font-size: 0.85rem;
+  }
+
+  .genre-book-author {
+    font-size: 0.75rem;
+  }
+
+  .genre-row-scroll {
+    gap: 10px;
+  }
+
+  .genre-rows {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .genre-main {
+    padding: 24px 10px 32px;
+  }
+
+  .genre-hero h1 {
+    font-size: 1.7rem;
+  }
+
+  .genre-hero p {
+    font-size: 0.95rem;
+  }
+
+  .genre-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  .genre-book-item {
+    flex: 0 0 120px;
+  }
+
+  .genre-book-title {
+    font-size: 0.8rem;
+  }
+
+  .genre-book-author {
+    font-size: 0.7rem;
+  }
+
+  .genre-book-rating {
+    font-size: 0.75rem;
+  }
+
+  .genre-row-scroll {
+    gap: 8px;
+  }
+
+  .genre-rows {
+    gap: 32px;
+  }
+}
+.genre-book-item:active {
+  transform: scale(0.98);
+}

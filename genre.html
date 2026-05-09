@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genre</title>
+    <title>Browse Genres — geeReads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="genre.css">
 </head>
 <body>
     <header>
-    <div class="navbar">
+        <div class="navbar">
             <div class="navlogo border">
                 <div class="logo"></div>
             </div>
             <nav class="navlinks">
-                <a href="#">Home</a>
+                <a href="index.html">Home</a>
                 <a href="genre.html">Genre</a>
                 <a href="explore.html">Explore</a>
                 <a href="#">Trending</a>
@@ -34,115 +36,46 @@
                 </div>
             </div>
         </div>
-</header>
-    <section class="genres-page">
-    <section id="romance">
-  <h2>Romance</h2>
+    </header>
 
-  <div class="row">
+    <main class="genre-main">
+        <div class="genre-hero">
+            <h1>Browse Genres</h1>
+            <p>Find stories for every mood</p>
+        </div>
+        <div id="genreRows" class="genre-rows"></div>
+    </main>
 
-    <div class="book-card">
-      <img src="images/rightmove.jpg">
-      <h3>The Right Move</h3>
-      <p>Romance</p>
-    </div>
+    <footer class="footer">
+        <p>© 2026 geeReads. Made with ❤️</p>
+    </footer>
 
-    <div class="book-card">
-      <img src="images/summerITurnedpretty.png">
-      <h3>The Summer I Turned Pretty</h3>
-      <p>Romance</p>
-    </div>
-    <div class="book-card">
-      <img src="images/alwaysHaveSummer.png">
-      <h3>We'll Always Have Summer</h3>
-      <p>Romance</p>
-    </div>
-    <div class="book-card">
-      <img src="images/betterThanMovies.png">
-      <h3>Better Than the Movies</h3>
-      <p>Romance</p>
-    </div>
-     <div class="book-card">
-      <img src="images/peopleWeMeetOnVacation.png">
-      <h3>People We Meet On Vacation</h3>
-      <p>Romance</p>
-    </div>
+    <script src="script.js"></script>
+    <script src="genre.js"></script>
+    <script>
+        // Profile dropdown functionality
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu = document.querySelector('.profile-menu');
 
-  </div>
-</section>
+        profileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = profileMenu.classList.toggle('open');
+            profileToggle.setAttribute('aria-expanded', isOpen);
+        });
 
-<section id="fantasy">
-  <h2>Fantasy</h2>
-  <div class="row">
-    <div class="book-card">
-      <img src="images/powerless.png">
-      <h3>Powerless</h3>
-      <p>Fantasy</p>
-    </div>
-    <div class="book-card">
-      <img src="images/fourthwing.png">
-      <h3>Fourth Wing</h3>
-      <p>Fantasy</p>
-    </div>
-    <div class="book-card">
-      <img src="images/harry potter.png">
-      <h3>Harry Potter</h3>
-      <p>Fantasy</p>
-    </div>
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('open');
+                profileToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
 
-  </div>
-</section>
-
-<section id="thriller">
-  <h2>Thriller</h2>
-  <div class="row">
-    <div class="book-card">
-      <img src="images/emperor.webp">
-      <h3>The Emperor</h3>
-      <p>Thriller</p>
-    </div>
-    <div class="book-card">
-      <img src="images/theHousemaid.png">
-      <h3>The Housemaid</h3>
-      <p>Thriller</p>
-    </div>
-    <div class="book-card">
-      <img src="images/girl'sGuideToMurder.png">
-      <h3>A Good Girl's Guide To Murder</h3>
-      <p>Thriller</p>
-    </div>
-
-
-  </div>
-</section>
-
-<section id="selfhelp">
-  <h2>Self Help</h2>
-  <div class="row">
-    <div class="book-card">
-      <img src="images/soGoodCantIgnore.png">
-      <h3>So Good They Can't Ignore You</h3>
-      <p>Self-Help</p>
-    </div>
-     <div class="book-card">
-      <img src="images/noExcuses.png">
-      <h3>No Excuses</h3>
-      <p>Self-help</p>
-    </div>
-    <div class="book-card">
-      <img src="images/power.png">
-      <h3>The 48 Laws Of Power</h3>
-      <p>Self-Help</p>
-    </div>
-    <div class="book-card">
-      <img src="images/atomichabits.jpg">
-      <h3>Atomic Habits</h3>
-      <p>Self-help</p>
-    </div>
-
-  </div>
-</section>
-</section>
-    
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                profileMenu.classList.remove('open');
+                profileToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    </script>
 </body>
 </html>
