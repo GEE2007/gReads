@@ -570,10 +570,26 @@ body {
   font-size: 1rem;
 }
 
-.tbr-btn{
-  background: linear-gradient(135deg, #d37a8c 0%, #f0c3d1 100%);
-  color: white;
-  box-shadow: 0 14px 24px rgba(195, 109, 140, 0.18);
+.tbr-btn.active{
+  background: linear-gradient(135deg, #a8d5e2 0%, #c7e9f1 100%);
+  color: #2a2629;
+}
+
+.read-btn.active{
+  background: linear-gradient(135deg, #a8d5e2 0%, #c7e9f1 100%);
+  color: #2a2629;
+}
+
+.dnf-btn{
+  background: linear-gradient(135deg, #f4c2c2 0%, #f8d7da 100%);
+  color: #2a2629;
+  border: 1px solid rgba(180, 150, 165, 0.35);
+  box-shadow: 0 12px 22px rgba(112, 90, 107, 0.08);
+}
+
+.dnf-btn.active{
+  background: linear-gradient(135deg, #a8d5e2 0%, #c7e9f1 100%);
+  color: #2a2629;
 }
 
 .read-btn{

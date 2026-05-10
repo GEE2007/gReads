@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Genres — geeReads</title>
+    <title>My Books — geeReads</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="stylesheet.css">
     <link rel="stylesheet" href="genre.css">
@@ -40,10 +40,24 @@
 
     <main class="genre-main">
         <div class="genre-hero">
-            <h1>Browse Genres</h1>
-            <p>Find stories for every mood</p>
+            <h1>My Books</h1>
+            <p>Your personal reading library</p>
         </div>
-        <div id="genreRows" class="genre-rows"></div>
+
+        <div id="myBooksContent" class="genre-rows">
+            <!-- Shelves will be populated by JavaScript -->
+        </div>
+
+        <div class="activity-timeline">
+            <h2>Recent Activity</h2>
+            <div id="activityList">
+                <!-- Timeline will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="tbr-link">
+            <p>Looking for saved books? <a href="tbr.html">View TBR →</a></p>
+        </div>
     </main>
 
     <footer class="footer">
@@ -51,32 +65,7 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="genre.js"></script>
     <script src="search.js"></script>
-    <script>
-        // Profile dropdown functionality
-        const profileToggle = document.getElementById('profileToggle');
-        const profileMenu = document.querySelector('.profile-menu');
-
-        profileToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isOpen = profileMenu.classList.toggle('open');
-            profileToggle.setAttribute('aria-expanded', isOpen);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!profileMenu.contains(e.target)) {
-                profileMenu.classList.remove('open');
-                profileToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                profileMenu.classList.remove('open');
-                profileToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-    </script>
+    <script src="myBooks.js"></script>
 </body>
 </html>

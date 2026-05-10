@@ -96,6 +96,7 @@ const books = [
     desc: "A romance where staying alive and staying in love are equally risky",
     genre: ["Romance","Thriller"],
     tropes: ["Romance", "Thriller", "Survival", "Dangerous Love"],
+    author: "Runyx",
      playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
@@ -104,6 +105,7 @@ const books = [
     desc: "A rom-com girlie chasing her movie moment… but life said plot twist",
     genre: ["Young Adult","Romance"],
     tropes: ["Rom-Com", "Chasing Dreams", "Plot Twist", "Young Adult Romance"],
+    author: "Lynn Painter",
      playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
@@ -112,6 +114,7 @@ const books = [
     desc: "Play the game… or get played",
     genre: ["Self-Help"],
     tropes: ["Power Dynamics", "Strategy", "Manipulation", "Self-Improvement"],
+    author: "Robert Greene",
       playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
@@ -120,6 +123,7 @@ const books = [
     desc: "Summer love, messy feelings, growing up",
     genre: ["Young Adult","Romance"],
     tropes: ["Summer Love", "Messy Feelings", "Growing Up"],
+    author: "Jenny Han",
      playlist:"https://open.spotify.com/playlist/abc123"
   },
   {
@@ -128,6 +132,7 @@ const books = [
     desc: "She knows too much… and it’s terrifying",
     genre: ["Mystery","Thriller"],
     tropes: ["Mystery", "Thriller", "Suspense", "Dark Secrets"],
+    author: "Freida McFadden",
      playlist:"https://open.spotify.com/playlist/abc123" 
   }
 
@@ -138,6 +143,71 @@ let current = 0;
 let popup;
 
 window.onload = () => {
+  // Only run swipe functionality if swipe-wrapper exists (explore page)
+  const wrapper = document.querySelector(".swipe-wrapper");
+  if (!wrapper) return;
+
+  function getTbrBooks() {
+    return JSON.parse(localStorage.getItem("tbrBooks")) || [];
+  }
+
+  function saveTbrBooks(books) {
+    localStorage.setItem("tbrBooks", JSON.stringify(books));
+  }
+
+  function migrateLegacyTbrKeys() {
+    const legacyKeys = ["tbr", "TBR", "savedBooks"];
+    let combined = getTbrBooks();
+
+    legacyKeys.forEach(key => {
+      const legacy = JSON.parse(localStorage.getItem(key)) || [];
+      if (Array.isArray(legacy)) {
+        legacy.forEach(oldBook => {
+          if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
+            combined.push(oldBook);
+          }
+        });
+      }
+      localStorage.removeItem(key);
+    });
+
+    saveTbrBooks(combined);
+  }
+
+  function isBookInTbr(book) {
+    return getTbrBooks().some(item => item.title === book.title);
+  }
+
+  function updateCardTbrButton(button, book) {
+    if (isBookInTbr(book)) {
+      button.textContent = "Added ✓";
+      button.classList.add('active');
+    } else {
+      button.textContent = "Add to TBR";
+      button.classList.remove('active');
+    }
+  }
+
+  function toggleCardTbr(button, book) {
+    const tbr = getTbrBooks();
+    const index = tbr.findIndex(item => item.title === book.title);
+
+    if (index === -1) {
+      tbr.push(book);
+      saveTbrBooks(tbr);
+      button.textContent = "Added ✓";
+      button.classList.add('active');
+      popup.textContent = "Added to TBR 💖";
+    } else {
+      tbr.splice(index, 1);
+      saveTbrBooks(tbr);
+      button.textContent = "Add to TBR";
+      button.classList.remove('active');
+      popup.textContent = "Removed from TBR";
+    }
+
+    showPopup();
+  }
 
   function renderCards(bookList){
     const wrapper = document.querySelector(".swipe-wrapper");
@@ -155,12 +225,20 @@ window.onload = () => {
         <div class="visit-btn">Visit Book 📖</div>
         <h3>${book.title}</h3>
         <p>${book.desc}</p>
+        <button class="tbr-btn explore-tbr-btn">${isBookInTbr(book) ? 'Added ✓' : 'Add to TBR'}</button>
       `;
 
       card.querySelector(".visit-btn").addEventListener("click", (e) => {
         e.stopPropagation();
         localStorage.setItem("selectedBook", JSON.stringify(book));
         window.location.href = "book.html";
+      });
+
+      const cardTbrBtn = card.querySelector('.explore-tbr-btn');
+      updateCardTbrButton(cardTbrBtn, book);
+      cardTbrBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleCardTbr(cardTbrBtn, book);
       });
 
       wrapper.appendChild(card);
@@ -196,31 +274,31 @@ window.onload = () => {
     }, 2200);
   }
   function swipeRight() {
-  let tbr = JSON.parse(localStorage.getItem("tbr")) || [];
+    let tbr = getTbrBooks();
+    const currentBook = books[current];
+    const exists = tbr.some(item => item.title === currentBook.title);
 
-  const currentBook = books[current];
+    if (!exists) {
+      tbr.push(currentBook);
+      saveTbrBooks(tbr);
+      popup.textContent = "Added to TBR 💖";
+    } else {
+      popup.textContent = "Already in TBR";
+    }
 
-  const exists = tbr.some(item => item.title === currentBook.title);
+    showPopup();
 
-  if (!exists) {
-    tbr.push(currentBook);
-    localStorage.setItem("tbr", JSON.stringify(tbr));
-    popup.textContent = "Added to TBR 💖";
-  } else {
-    popup.textContent = "Already in TBR ";
+    setTimeout(() => {
+      cards[current].classList.add("swipe-right");
+    }, 400);
+
+    setTimeout(() => {
+      nextCard();
+      popup.classList.remove("show");
+    }, 900);
   }
 
-  showPopup();
-
-  setTimeout(() => {
-    cards[current].classList.add("swipe-right");
-  }, 400);
-
-  setTimeout(() => {
-    nextCard();
-    popup.classList.remove("show");
-  }, 900);
-}
+  migrateLegacyTbrKeys();
   renderCards(books);
 
   document.addEventListener("keydown", (e)=>{

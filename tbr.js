@@ -1,8 +1,43 @@
-// TBR Page JavaScript
+// Utility functions for shelf management
+function getShelfBooks(shelfKey) {
+  const stored = localStorage.getItem(shelfKey);
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveShelfBooks(shelfKey, books) {
+  localStorage.setItem(shelfKey, JSON.stringify(books));
+}
+
+function addToShelf(shelfKey, book) {
+  const books = getShelfBooks(shelfKey);
+  if (!books.some(b => b.title === book.title)) {
+    books.push(book);
+    saveShelfBooks(shelfKey, books);
+  }
+}
+
+function removeFromShelf(shelfKey, book) {
+  const books = getShelfBooks(shelfKey);
+  const index = books.findIndex(b => b.title === book.title);
+  if (index !== -1) {
+    books.splice(index, 1);
+    saveShelfBooks(shelfKey, books);
+  }
+}
+
+function addActivity(action, description) {
+  const activities = JSON.parse(localStorage.getItem('activities')) || [];
+  activities.unshift({
+    action,
+    description,
+    timestamp: new Date().toISOString()
+  });
+  // Keep only last 50 activities
+  if (activities.length > 50) activities.splice(50);
+  localStorage.setItem('activities', JSON.stringify(activities));
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-  renderTbr();
-
   // Profile dropdown
   const profileToggle = document.getElementById('profileToggle');
   const profileMenu = document.querySelector('.profile-menu');
@@ -28,13 +63,33 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+function migrateLegacyTbrKeys() {
+  const legacyKeys = ['tbr', 'TBR', 'savedBooks'];
+  let combined = getShelfBooks('tbrBooks');
+
+  legacyKeys.forEach(key => {
+    const legacy = JSON.parse(localStorage.getItem(key)) || [];
+    if (Array.isArray(legacy)) {
+      legacy.forEach(oldBook => {
+        if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
+          combined.push(oldBook);
+        }
+      });
+    }
+    localStorage.removeItem(key);
+  });
+
+  saveShelfBooks('tbrBooks', combined);
+}
+
 function loadTbr() {
-  const stored = JSON.parse(localStorage.getItem('tbr')) || [];
+  migrateLegacyTbrKeys();
+  const stored = JSON.parse(localStorage.getItem('tbrBooks')) || [];
   return Array.isArray(stored) ? stored : [];
 }
 
 function saveTbr(books) {
-  localStorage.setItem('tbr', JSON.stringify(books));
+  localStorage.setItem('tbrBooks', JSON.stringify(books));
 }
 
 function renderTbr() {
@@ -49,7 +104,7 @@ function renderTbr() {
   let html = '<div class="tbr-grid">';
 
   books.forEach((book, index) => {
-    const isRead = book.read || false;
+    const isRead = getShelfBooks('readBooks').some(b => b.title === book.title);
     html += `
       <div class="tbr-card">
         <div class="tbr-cover-container">
@@ -133,8 +188,19 @@ function handleAction(e) {
   }
 
   if (action === 'read') {
-    book.read = !book.read;
-    saveTbr(books);
+    // Toggle read status
+    if (getShelfBooks('readBooks').some(b => b.title === book.title)) {
+      // Remove from read
+      removeFromShelf('readBooks', book);
+      addActivity('removed_from_read', `Removed "${book.title}" from Read`);
+    } else {
+      // Add to read
+      addToShelf('readBooks', book);
+      // Remove from TBR and DNF
+      removeFromShelf('tbrBooks', book);
+      removeFromShelf('dnf', book);
+      addActivity('marked_as_read', `Marked "${book.title}" as read`);
+    }
     renderTbr();
     return;
   }

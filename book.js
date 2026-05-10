@@ -18,21 +18,7 @@ book.genre.forEach(g => {
   span.classList.add("genre-tag");
   genres.appendChild(span);
 });
-const tbrBtn = document.querySelector(".tbr-btn");
 
-tbrBtn.addEventListener("click", () => {
-  let tbr = JSON.parse(localStorage.getItem("tbr")) || [];
-
-  const exists = tbr.some(item => item.title === book.title);
-
-  if (!exists) {
-    tbr.push(book);
-    localStorage.setItem("tbr", JSON.stringify(tbr));
-    tbrBtn.textContent = "Added 💖";
-  } else {
-    tbrBtn.textContent = "Already Added ";
-  }
-});
 const author = document.querySelector(".author");
 author.textContent = "by " + book.author;
 const tropesBox = document.querySelector(".tropes");
@@ -46,6 +32,173 @@ if(book.tropes){
   });
 }
 document.querySelector(".playlist-link").href = book.playlist;
+
+// Button logic
+const tbrBtn = document.querySelector(".tbr-btn");
+const readBtn = document.querySelector(".read-btn");
+const dnfBtn = document.querySelector(".dnf-btn");
+
+// Utility functions for shelf management
+function getShelfBooks(shelfKey) {
+  const stored = localStorage.getItem(shelfKey);
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveShelfBooks(shelfKey, books) {
+  localStorage.setItem(shelfKey, JSON.stringify(books));
+}
+
+function migrateLegacyTbrKeys() {
+  const legacyKeys = ['tbr', 'TBR', 'savedBooks'];
+  let combined = getShelfBooks('tbrBooks');
+
+  legacyKeys.forEach(key => {
+    const legacy = JSON.parse(localStorage.getItem(key)) || [];
+    if (Array.isArray(legacy)) {
+      legacy.forEach(oldBook => {
+        if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
+          combined.push(oldBook);
+        }
+      });
+    }
+    localStorage.removeItem(key);
+  });
+
+  saveShelfBooks('tbrBooks', combined);
+}
+
+function addToShelf(shelfKey, book) {
+  const books = getShelfBooks(shelfKey);
+  if (!books.some(b => b.title === book.title)) {
+    books.push(book);
+    saveShelfBooks(shelfKey, books);
+  }
+}
+
+function removeFromShelf(shelfKey, book) {
+  const books = getShelfBooks(shelfKey);
+  const index = books.findIndex(b => b.title === book.title);
+  if (index !== -1) {
+    books.splice(index, 1);
+    saveShelfBooks(shelfKey, books);
+  }
+}
+
+function isInShelf(shelfKey, book) {
+  return getShelfBooks(shelfKey).some(b => b.title === book.title);
+}
+
+function addActivity(action, description) {
+  const activities = JSON.parse(localStorage.getItem('activities')) || [];
+  activities.unshift({
+    action,
+    description,
+    timestamp: new Date().toISOString()
+  });
+  // Keep only last 50 activities
+  if (activities.length > 50) activities.splice(50);
+  localStorage.setItem('activities', JSON.stringify(activities));
+}
+
+// Initialize button states on page load
+function initializeButtons() {
+  const isInTBR = isInShelf('tbrBooks', book);
+  const isRead = isInShelf('readBooks', book);
+  const isDNF = isInShelf('dnf', book);
+
+  if (isInTBR) {
+    tbrBtn.textContent = "Added ✓";
+    tbrBtn.classList.add('active');
+  } else {
+    tbrBtn.textContent = "Add to TBR";
+    tbrBtn.classList.remove('active');
+  }
+
+  if (isRead) {
+    readBtn.textContent = "Read ✓";
+    readBtn.classList.add('active');
+  } else {
+    readBtn.textContent = "Mark as Read";
+    readBtn.classList.remove('active');
+  }
+
+  if (isDNF) {
+    dnfBtn.textContent = "DNF ✓";
+    dnfBtn.classList.add('active');
+  } else {
+    dnfBtn.textContent = "Mark as DNF";
+    dnfBtn.classList.remove('active');
+  }
+}
+
+// TBR Button Toggle
+tbrBtn.addEventListener("click", () => {
+  if (isInShelf('tbrBooks', book)) {
+    // Remove from TBR
+    removeFromShelf('tbrBooks', book);
+    tbrBtn.textContent = "Add to TBR";
+    tbrBtn.classList.remove('active');
+    addActivity('removed_from_tbr', `Removed "${book.title}" from TBR`);
+  } else {
+    // Add to TBR
+    addToShelf('tbrBooks', book);
+    tbrBtn.textContent = "Added ✓";
+    tbrBtn.classList.add('active');
+    addActivity('added_to_tbr', `Added "${book.title}" to TBR`);
+  }
+});
+
+// Read Button Toggle
+readBtn.addEventListener("click", () => {
+  if (isInShelf('readBooks', book)) {
+    // Remove from Read
+    removeFromShelf('readBooks', book);
+    readBtn.textContent = "Mark as Read";
+    readBtn.classList.remove('active');
+    addActivity('removed_from_read', `Removed "${book.title}" from Read`);
+  } else {
+    // Add to Read
+    addToShelf('readBooks', book);
+    readBtn.textContent = "Read ✓";
+    readBtn.classList.add('active');
+    // Remove from TBR and DNF if present
+    removeFromShelf('tbrBooks', book);
+    removeFromShelf('dnf', book);
+    tbrBtn.textContent = "Add to TBR";
+    tbrBtn.classList.remove('active');
+    dnfBtn.textContent = "Mark as DNF";
+    dnfBtn.classList.remove('active');
+    addActivity('marked_as_read', `Marked "${book.title}" as read`);
+  }
+});
+
+// DNF Button Toggle
+dnfBtn.addEventListener("click", () => {
+  if (isInShelf('dnf', book)) {
+    // Remove from DNF
+    removeFromShelf('dnf', book);
+    dnfBtn.textContent = "Mark as DNF";
+    dnfBtn.classList.remove('active');
+    addActivity('removed_from_dnf', `Removed "${book.title}" from DNF`);
+  } else {
+    // Add to DNF
+    addToShelf('dnf', book);
+    dnfBtn.textContent = "DNF ✓";
+    dnfBtn.classList.add('active');
+    // Remove from TBR and Read if present
+    removeFromShelf('tbrBooks', book);
+    removeFromShelf('readBooks', book);
+    tbrBtn.textContent = "Add to TBR";
+    tbrBtn.classList.remove('active');
+    readBtn.textContent = "Mark as Read";
+    readBtn.classList.remove('active');
+    addActivity('marked_as_dnf', `Marked "${book.title}" as DNF`);
+  }
+});
+
+// Initialize on load
+migrateLegacyTbrKeys();
+initializeButtons();
 
 // Sample reviews with usernames and ratings
 const sampleReviews = [
@@ -173,6 +326,11 @@ submitReviewBtn.addEventListener('click', () => {
 
   userReviews.unshift(newReview);
   localStorage.setItem(reviewStorageKey, JSON.stringify(userReviews));
+
+  // Add to reviewed shelf
+  addToShelf('reviewed', book);
+  addActivity('reviewed_book', `Reviewed "${book.title}"`);
+
   renderReviews();
 
   reviewTextarea.value = '';

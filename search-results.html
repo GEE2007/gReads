@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results — geeReads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="genre.css">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="navlogo border">
+                <div class="logo"></div>
+            </div>
+            <nav class="navlinks">
+                <a href="index.html">Home</a>
+                <a href="genre.html">Genre</a>
+                <a href="explore.html">Explore</a>
+                <a href="#">Trending</a>
+                <a href="myBooks.html">My Books</a>
+            </nav>
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search books, authors, genres...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="profile-menu">
+                <div class="profile-icon" id="profileToggle" aria-haspopup="true" aria-expanded="false">GB</div>
+                <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+                    <a href="#" role="menuitem">My Profile</a>
+                    <a href="tbr.html" role="menuitem">TBR</a>
+                    <a href="#" role="menuitem">My Library</a>
+                    <a href="#" role="menuitem">Settings</a>
+                    <a href="#" role="menuitem">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="genre-main">
+        <div class="genre-hero">
+            <h1>Search Results</h1>
+            <p id="searchQuery">Loading...</p>
+        </div>
+        <div id="searchResults" class="genre-rows">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 geeReads. Made with ❤️</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="search.js"></script>
+    <script>
+        // Profile dropdown functionality
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu = document.querySelector('.profile-menu');
+
+        profileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = profileMenu.classList.toggle('open');
+            profileToggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('open');
+                profileToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                profileMenu.classList.remove('open');
+                profileToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Search results functionality
+        function displaySearchResults() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+
+            if (!query) {
+                document.getElementById('searchQuery').textContent = 'No search query provided';
+                document.getElementById('searchResults').innerHTML = '<p>Please enter a search term.</p>';
+                return;
+            }
+
+            // Set the search bar value to the current query
+            document.querySelector('.search-bar').value = query;
+
+            document.getElementById('searchQuery').textContent = `Showing results for "${query}"`;
+
+            const lowerQuery = query.toLowerCase();
+            const filteredBooks = books.filter(book =>
+                (book.title && book.title.toLowerCase().includes(lowerQuery)) ||
+                (book.author && book.author.toLowerCase().includes(lowerQuery)) ||
+                (book.genre && book.genre.some(g => g.toLowerCase().includes(lowerQuery)))
+            );
+
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (filteredBooks.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="genre-section">
+                        <h2>No books found</h2>
+                        <p>Try different keywords or check your spelling.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Create a single row with all matching books
+            const section = document.createElement('div');
+            section.className = 'genre-section';
+
+            const title = document.createElement('h2');
+            title.textContent = `Found ${filteredBooks.length} result${filteredBooks.length === 1 ? '' : 's'}`;
+            section.appendChild(title);
+
+            const rowScroll = document.createElement('div');
+            rowScroll.className = 'genre-row-scroll';
+
+            filteredBooks.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.className = 'genre-book-item';
+                bookItem.onclick = () => {
+                    localStorage.setItem("selectedBook", JSON.stringify(book));
+                    window.location.href = "book.html";
+                };
+
+                bookItem.innerHTML = `
+                    <div class="genre-book-cover">
+                        <img src="${book.image}" alt="${book.title}">
+                    </div>
+                    <div class="genre-book-metadata">
+                        <div class="genre-book-title">${book.title}</div>
+                        <div class="genre-book-author">by ${book.author}</div>
+                    </div>
+                `;
+
+                rowScroll.appendChild(bookItem);
+            });
+
+            section.appendChild(rowScroll);
+            resultsContainer.appendChild(section);
+        }
+
+        // Initialize search results on page load
+        displaySearchResults();
+    </script>
+</body>
+</html>
