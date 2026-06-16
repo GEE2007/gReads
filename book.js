@@ -48,25 +48,6 @@ function saveShelfBooks(shelfKey, books) {
   localStorage.setItem(shelfKey, JSON.stringify(books));
 }
 
-function migrateLegacyTbrKeys() {
-  const legacyKeys = ['tbr', 'TBR', 'savedBooks'];
-  let combined = getShelfBooks('tbrBooks');
-
-  legacyKeys.forEach(key => {
-    const legacy = JSON.parse(localStorage.getItem(key)) || [];
-    if (Array.isArray(legacy)) {
-      legacy.forEach(oldBook => {
-        if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
-          combined.push(oldBook);
-        }
-      });
-    }
-    localStorage.removeItem(key);
-  });
-
-  saveShelfBooks('tbrBooks', combined);
-}
-
 function addToShelf(shelfKey, book) {
   const books = getShelfBooks(shelfKey);
   if (!books.some(b => b.title === book.title)) {
@@ -102,7 +83,7 @@ function addActivity(action, description) {
 
 // Initialize button states on page load
 function initializeButtons() {
-  const isInTBR = isInShelf('tbrBooks', book);
+  const isInTBR = window.shelfManager.isInTBR(book);
   const isRead = isInShelf('readBooks', book);
   const isDNF = isInShelf('dnf', book);
 
@@ -133,15 +114,13 @@ function initializeButtons() {
 
 // TBR Button Toggle
 tbrBtn.addEventListener("click", () => {
-  if (isInShelf('tbrBooks', book)) {
-    // Remove from TBR
-    removeFromShelf('tbrBooks', book);
+  if (window.shelfManager.isInTBR(book)) {
+    window.shelfManager.removeFromTBR(book);
     tbrBtn.textContent = "Add to TBR";
     tbrBtn.classList.remove('active');
     addActivity('removed_from_tbr', `Removed "${book.title}" from TBR`);
   } else {
-    // Add to TBR
-    addToShelf('tbrBooks', book);
+    window.shelfManager.addToTBR(book);
     tbrBtn.textContent = "Added ✓";
     tbrBtn.classList.add('active');
     addActivity('added_to_tbr', `Added "${book.title}" to TBR`);
@@ -162,7 +141,7 @@ readBtn.addEventListener("click", () => {
     readBtn.textContent = "Read ✓";
     readBtn.classList.add('active');
     // Remove from TBR and DNF if present
-    removeFromShelf('tbrBooks', book);
+    window.shelfManager.removeFromTBR(book);
     removeFromShelf('dnf', book);
     tbrBtn.textContent = "Add to TBR";
     tbrBtn.classList.remove('active');
@@ -186,7 +165,7 @@ dnfBtn.addEventListener("click", () => {
     dnfBtn.textContent = "DNF ✓";
     dnfBtn.classList.add('active');
     // Remove from TBR and Read if present
-    removeFromShelf('tbrBooks', book);
+    window.shelfManager.removeFromTBR(book);
     removeFromShelf('readBooks', book);
     tbrBtn.textContent = "Add to TBR";
     tbrBtn.classList.remove('active');
@@ -197,7 +176,6 @@ dnfBtn.addEventListener("click", () => {
 });
 
 // Initialize on load
-migrateLegacyTbrKeys();
 initializeButtons();
 
 // Sample reviews with usernames and ratings

@@ -1,0 +1,193 @@
+[33mcommit 42daa0ff72b04c497899021f8924c8f2debc2204[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Geetika <GEE2007@users.noreply.github.com>
+Date:   Sun May 10 19:37:57 2026 +0530
+
+    WIP: improve My Books dashboard and TBR flows
+
+[1mdiff --git a/book.html b/book.html[m
+[1mindex 6af8f3e..ce99ebe 100644[m
+[1m--- a/book.html[m
+[1m+++ b/book.html[m
+[36m@@ -16,7 +16,7 @@[m
+                 <a href="genre.html">Genre</a>[m
+                 <a href="explore.html">Explore</a>[m
+                 <a href="#">Trending</a>[m
+[31m-                <a href="#">My Books</a>[m
+[32m+[m[32m                <a href="myBooks.html">My Books</a>[m
+             </nav>[m
+             <div class="search-container">[m
+                 <input type="text" class="search-bar" placeholder="Search books, authors, genres...">[m
+[36m@@ -54,6 +54,7 @@[m
+     <div class="actions">[m
+   <button class="tbr-btn">Add to TBR</button>[m
+   <button class="read-btn">Mark as Read</button>[m
+[32m+[m[32m  <button class="dnf-btn">Mark as DNF</button>[m
+ </div>[m
+ <div class="playlist">[m
+  <h3>Reading Vibes 🎵</h3>[m
+[36m@@ -83,6 +84,8 @@[m
+ </div>[m
+   </div>[m
+ </div>[m
+[32m+[m[32m<script src="script.js"></script>[m
+[32m+[m[32m<script src="search.js"></script>[m
+ <script src="book.js"></script>[m
+ <script>[m
+         const profileToggle = document.getElementById('profileToggle');[m
+[1mdiff --git a/book.js b/book.js[m
+[1mindex 80f1e1a..8e438bb 100644[m
+[1m--- a/book.js[m
+[1m+++ b/book.js[m
+[36m@@ -18,21 +18,7 @@[m [mbook.genre.forEach(g => {[m
+   span.classList.add("genre-tag");[m
+   genres.appendChild(span);[m
+ });[m
+[31m-const tbrBtn = document.querySelector(".tbr-btn");[m
+[31m-[m
+[31m-tbrBtn.addEventListener("click", () => {[m
+[31m-  let tbr = JSON.parse(localStorage.getItem("tbr")) || [];[m
+[31m-[m
+[31m-  const exists = tbr.some(item => item.title === book.title);[m
+ [m
+[31m-  if (!exists) {[m
+[31m-    tbr.push(book);[m
+[31m-    localStorage.setItem("tbr", JSON.stringify(tbr));[m
+[31m-    tbrBtn.textContent = "Added 💖";[m
+[31m-  } else {[m
+[31m-    tbrBtn.textContent = "Already Added ";[m
+[31m-  }[m
+[31m-});[m
+ const author = document.querySelector(".author");[m
+ author.textContent = "by " + book.author;[m
+ const tropesBox = document.querySelector(".tropes");[m
+[36m@@ -47,6 +33,173 @@[m [mif(book.tropes){[m
+ }[m
+ document.querySelector(".playlist-link").href = book.playlist;[m
+ [m
+[32m+[m[32m// Button logic[m
+[32m+[m[32mconst tbrBtn = document.querySelector(".tbr-btn");[m
+[32m+[m[32mconst readBtn = document.querySelector(".read-btn");[m
+[32m+[m[32mconst dnfBtn = document.querySelector(".dnf-btn");[m
+[32m+[m
+[32m+[m[32m// Utility functions for shelf management[m
+[32m+[m[32mfunction getShelfBooks(shelfKey) {[m
+[32m+[m[32m  const stored = localStorage.getItem(shelfKey);[m
+[32m+[m[32m  return stored ? JSON.parse(stored) : [];[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction saveShelfBooks(shelfKey, books) {[m
+[32m+[m[32m  localStorage.setItem(shelfKey, JSON.stringify(books));[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction migrateLegacyTbrKeys() {[m
+[32m+[m[32m  const legacyKeys = ['tbr', 'TBR', 'savedBooks'];[m
+[32m+[m[32m  let combined = getShelfBooks('tbrBooks');[m
+[32m+[m
+[32m+[m[32m  legacyKeys.forEach(key => {[m
+[32m+[m[32m    const legacy = JSON.parse(localStorage.getItem(key)) || [];[m
+[32m+[m[32m    if (Array.isArray(legacy)) {[m
+[32m+[m[32m      legacy.forEach(oldBook => {[m
+[32m+[m[32m        if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {[m
+[32m+[m[32m          combined.push(oldBook);[m
+[32m+[m[32m        }[m
+[32m+[m[32m      });[m
+[32m+[m[32m    }[m
+[32m+[m[32m    localStorage.removeItem(key);[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  saveShelfBooks('tbrBooks', combined);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction addToShelf(shelfKey, book) {[m
+[32m+[m[32m  const books = getShelfBooks(shelfKey);[m
+[32m+[m[32m  if (!books.some(b => b.title === book.title)) {[m
+[32m+[m[32m    books.push(book);[m
+[32m+[m[32m    saveShelfBooks(shelfKey, books);[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction removeFromShelf(shelfKey, book) {[m
+[32m+[m[32m  const books = getShelfBooks(shelfKey);[m
+[32m+[m[32m  const index = books.findIndex(b => b.title === book.title);[m
+[32m+[m[32m  if (index !== -1) {[m
+[32m+[m[32m    books.splice(index, 1);[m
+[32m+[m[32m    saveShelfBooks(shelfKey, books);[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction isInShelf(shelfKey, book) {[m
+[32m+[m[32m  return getShelfBooks(shelfKey).some(b => b.title === book.title);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction addActivity(action, description) {[m
+[32m+[m[32m  const activities = JSON.parse(localStorage.getItem('activities')) || [];[m
+[32m+[m[32m  activities.unshift({[m
+[32m+[m[32m    action,[m
+[32m+[m[32m    description,[m
+[32m+[m[32m    timestamp: new Date().toISOString()[m
+[32m+[m[32m  });[m
+[32m+[m[32m  // Keep only last 50 activities[m
+[32m+[m[32m  if (activities.length > 50) activities.splice(50);[m
+[32m+[m[32m  localStorage.setItem('activities', JSON.stringify(activities));[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m// Initialize button states on page load[m
+[32m+[m[32mfunction initializeButtons() {[m
+[32m+[m[32m  const isInTBR = isInShelf('tbrBooks', book);[m
+[32m+[m[32m  const isRead = isInShelf('readBooks', book);[m
+[32m+[m[32m  const isDNF = isInShelf('dnf', book);[m
+[32m+[m
+[32m+[m[32m  if (isInTBR) {[m
+[32m+[m[32m    tbrBtn.textContent = "Added ✓";[m
+[32m+[m[32m    tbrBtn.classList.add('active');[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    tbrBtn.textContent = "Add to TBR";[m
+[32m+[m[32m    tbrBtn.classList.remove('active');[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  if (isRead) {[m
+[32m+[m[32m    readBtn.textContent = "Read ✓";[m
+[32m+[m[32m    readBtn.classList.add('active');[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    readBtn.textContent = "Mark as Read";[m
+[32m+[m[32m    readBtn.classList.remove('active');[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  if (isDNF) {[m
+[32m+[m[32m    dnfBtn.textContent = "DNF ✓";[m
+[32m+[m[32m    dnfBtn.classList.add('active');[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    dnfBtn.textContent = "Mark as DNF";[m
+[32m+[m[32m    dnfBtn.classList.remove('active');[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m// TBR Button Toggle[m
+[32m+[m[32mtbrBtn.addEventListener("click", () => {[m
+[32m+[m[32m  if (isInShelf('tbrBooks', book)) {[m
+[32m+[m[32m    // Remove from TBR[m
+[32m+[m[32m    removeFromShelf('tbrBooks', book);[m
+[32m+[m[32m    tbrBtn.textContent = "Add to TBR";[m
+[32m+[m[32m    tbrBtn.classList.remove('active');[m
+[32m+[m[32m    addActivity('removed_from_tbr', `Removed "${book.title}" from TBR`);[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    // Add to TBR[m
+[32m+[m[32m    addToShelf('tbrBooks', book);[m
+[32m+[m[32m    tbrBtn.textContent = "Added ✓";[m
+[32m+[m[32m    tbrBtn.classList.add('active');[m
+[32m+[m[32m    addActivity('added_to_tbr', `Added "${book.title}" to TBR`);[m
+[32m+[m[32m  }[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32m// Read Button Toggle[m
+[32m+[m[32mreadBtn.addEventListener("click", () => {[m
+[32m+[m[32m  if (isInShelf('readBooks', book)) {[m
+[32m+[m[32m    // Remove from Read[m
+[32m+[m[32m    removeFromShelf('readBooks', book);[m
+[32m+[m[32m    readBtn.textContent = "Mark as Read";[m
+[32m+[m[32m    readBtn.classList.remove('active');[m
+[32m+[m[32m    addActivity('removed_from_read', `Removed "${book.title}" from Read`);[m
+[32m+[m[32m  } else {[m
+[32m+[m[32m    // Add to Read[m
+[32m+[m[32m    addToShelf('readBooks', book);[m
+[32m+[m[32m    readBtn.textContent = "Read ✓";[m

@@ -37,6 +37,14 @@ function addActivity(action, description) {
   localStorage.setItem('activities', JSON.stringify(activities));
 }
 
+function checkShelfManager() {
+  if (!window.shelfManager) {
+    console.error('shelfManager is required for TBR rendering.');
+    return false;
+  }
+  return true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Profile dropdown
   const profileToggle = document.getElementById('profileToggle');
@@ -61,39 +69,16 @@ document.addEventListener('DOMContentLoaded', function() {
       profileToggle.setAttribute('aria-expanded', 'false');
     }
   });
+
+  if (checkShelfManager()) {
+    renderTbr();
+  }
 });
 
-function migrateLegacyTbrKeys() {
-  const legacyKeys = ['tbr', 'TBR', 'savedBooks'];
-  let combined = getShelfBooks('tbrBooks');
-
-  legacyKeys.forEach(key => {
-    const legacy = JSON.parse(localStorage.getItem(key)) || [];
-    if (Array.isArray(legacy)) {
-      legacy.forEach(oldBook => {
-        if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
-          combined.push(oldBook);
-        }
-      });
-    }
-    localStorage.removeItem(key);
-  });
-
-  saveShelfBooks('tbrBooks', combined);
-}
-
-function loadTbr() {
-  migrateLegacyTbrKeys();
-  const stored = JSON.parse(localStorage.getItem('tbrBooks')) || [];
-  return Array.isArray(stored) ? stored : [];
-}
-
-function saveTbr(books) {
-  localStorage.setItem('tbrBooks', JSON.stringify(books));
-}
-
 function renderTbr() {
-  const books = loadTbr();
+  if (!checkShelfManager()) return;
+
+  const books = window.shelfManager.getTBR();
   const content = document.getElementById('tbrContent');
 
   if (books.length === 0) {
@@ -167,9 +152,11 @@ function attachEventListeners() {
 
 function handleAction(e) {
   e.preventDefault();
+  if (!checkShelfManager()) return;
+
   const action = e.target.dataset.action;
   const index = parseInt(e.target.dataset.index);
-  const books = loadTbr();
+  const books = window.shelfManager.getTBR();
   const book = books[index];
 
   if (!book) return;
@@ -181,8 +168,7 @@ function handleAction(e) {
   }
 
   if (action === 'remove') {
-    books.splice(index, 1);
-    saveTbr(books);
+    window.shelfManager.removeFromTBR(book);
     renderTbr();
     return;
   }
@@ -197,7 +183,7 @@ function handleAction(e) {
       // Add to read
       addToShelf('readBooks', book);
       // Remove from TBR and DNF
-      removeFromShelf('tbrBooks', book);
+      window.shelfManager.removeFromTBR(book);
       removeFromShelf('dnf', book);
       addActivity('marked_as_read', `Marked "${book.title}" as read`);
     }

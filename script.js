@@ -147,35 +147,8 @@ window.onload = () => {
   const wrapper = document.querySelector(".swipe-wrapper");
   if (!wrapper) return;
 
-  function getTbrBooks() {
-    return JSON.parse(localStorage.getItem("tbrBooks")) || [];
-  }
-
-  function saveTbrBooks(books) {
-    localStorage.setItem("tbrBooks", JSON.stringify(books));
-  }
-
-  function migrateLegacyTbrKeys() {
-    const legacyKeys = ["tbr", "TBR", "savedBooks"];
-    let combined = getTbrBooks();
-
-    legacyKeys.forEach(key => {
-      const legacy = JSON.parse(localStorage.getItem(key)) || [];
-      if (Array.isArray(legacy)) {
-        legacy.forEach(oldBook => {
-          if (oldBook && oldBook.title && !combined.some(item => item.title === oldBook.title)) {
-            combined.push(oldBook);
-          }
-        });
-      }
-      localStorage.removeItem(key);
-    });
-
-    saveTbrBooks(combined);
-  }
-
   function isBookInTbr(book) {
-    return getTbrBooks().some(item => item.title === book.title);
+    return window.shelfManager.isInTBR(book);
   }
 
   function updateCardTbrButton(button, book) {
@@ -189,21 +162,16 @@ window.onload = () => {
   }
 
   function toggleCardTbr(button, book) {
-    const tbr = getTbrBooks();
-    const index = tbr.findIndex(item => item.title === book.title);
-
-    if (index === -1) {
-      tbr.push(book);
-      saveTbrBooks(tbr);
-      button.textContent = "Added ✓";
-      button.classList.add('active');
-      popup.textContent = "Added to TBR 💖";
-    } else {
-      tbr.splice(index, 1);
-      saveTbrBooks(tbr);
+    if (window.shelfManager.isInTBR(book)) {
+      window.shelfManager.removeFromTBR(book);
       button.textContent = "Add to TBR";
       button.classList.remove('active');
       popup.textContent = "Removed from TBR";
+    } else {
+      window.shelfManager.addToTBR(book);
+      button.textContent = "Added ✓";
+      button.classList.add('active');
+      popup.textContent = "Added to TBR 💖";
     }
 
     showPopup();
@@ -274,13 +242,9 @@ window.onload = () => {
     }, 2200);
   }
   function swipeRight() {
-    let tbr = getTbrBooks();
     const currentBook = books[current];
-    const exists = tbr.some(item => item.title === currentBook.title);
-
-    if (!exists) {
-      tbr.push(currentBook);
-      saveTbrBooks(tbr);
+    if (!window.shelfManager.isInTBR(currentBook)) {
+      window.shelfManager.addToTBR(currentBook);
       popup.textContent = "Added to TBR 💖";
     } else {
       popup.textContent = "Already in TBR";
@@ -298,7 +262,6 @@ window.onload = () => {
     }, 900);
   }
 
-  migrateLegacyTbrKeys();
   renderCards(books);
 
   document.addEventListener("keydown", (e)=>{
