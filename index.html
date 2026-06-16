@@ -67,25 +67,25 @@
 
     <div class="book-container">
 
-        <div class="book-card">
+        <div class="book-card" data-title="The Right Move" data-author="Liz Tomforde" data-img="images/rightmove.jpg">
             <img src="images/rightmove.jpg">
             <h3>The Right Move</h3>
             <p>Romance</p>
         </div>
 
-        <div class="book-card">
+        <div class="book-card" data-title="The Emperor" data-author="Runyx" data-img="images/emperor.webp">
             <img src="images/emperor.webp">
             <h3>The Emperor</h3>
             <p>Thriller</p>
         </div>
 
-        <div class="book-card">
+        <div class="book-card" data-title="Fourth Wing" data-author="Rebecca Yarros" data-img="images/fourthwing.png">
             <img src="images/fourthwing.png">
             <h3>Fourth Wing</h3>
             <p>Fantasy</p>
         </div>
 
-        <div class="book-card">
+        <div class="book-card" data-title="Atomic Habits" data-author="James Clear" data-img="images/atomichabits.jpg">
             <img src="images/atomichabits.jpg">
             <h3>Atomic Habits</h3>
             <p>Self-help</p>
@@ -123,6 +123,20 @@
             if (event.key === 'Escape') {
                 closeProfileMenu();
             }
+        });
+
+        document.addEventListener('click', (event) => {
+            const card = event.target.closest('.book-card');
+            if (!card) return;
+
+            const title = card.dataset.title;
+            if (!title || typeof books === 'undefined') return;
+
+            const selectedBook = books.find(book => book.title === title);
+            if (!selectedBook) return;
+
+            localStorage.setItem('selectedBook', JSON.stringify(selectedBook));
+            window.location.href = 'book.html';
         });
     </script>
 </body>

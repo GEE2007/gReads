@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadMyBooksDashboard() {
     const shelves = [
         { key: 'readBooks', title: 'Read Books', icon: 'fas fa-check-circle' },
+        { key: 'recommendedBooks', title: 'Recommended', icon: 'fas fa-bullhorn' },
         { key: 'favorites', title: 'Favorites', icon: 'fas fa-heart' },
         { key: 'reviewed', title: 'Reviewed', icon: 'fas fa-star' },
         { key: 'dnf', title: 'Did Not Finish', icon: 'fas fa-times-circle' }
@@ -133,6 +134,8 @@ function getActivities() {
 function getActivityIcon(action) {
     const icons = {
         'added_to_read': 'fas fa-check-circle',
+        'recommended': 'fas fa-bullhorn',
+        'removed_recommendation': 'fas fa-bullhorn',
         'added_to_favorites': 'fas fa-heart',
         'reviewed': 'fas fa-star',
         'added_to_dnf': 'fas fa-times-circle',

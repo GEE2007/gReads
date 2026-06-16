@@ -11,19 +11,21 @@ const genres = document.querySelector(".tags");
 
 img.src = book.image;
 title.textContent = book.title;
-desc.textContent = book.desc;
-book.genre.forEach(g => {
-  const span = document.createElement("span");
-  span.textContent = g;
-  span.classList.add("genre-tag");
-  genres.appendChild(span);
-});
+desc.textContent = book.desc || "No description available for this book yet.";
+if (book.genre && Array.isArray(book.genre)) {
+  book.genre.forEach(g => {
+    const span = document.createElement("span");
+    span.textContent = g;
+    span.classList.add("genre-tag");
+    genres.appendChild(span);
+  });
+}
 
 const author = document.querySelector(".author");
 author.textContent = "by " + book.author;
 const tropesBox = document.querySelector(".tropes");
 
-if(book.tropes){
+if (book.tropes && Array.isArray(book.tropes)) {
   book.tropes.forEach(trope => {
     const span = document.createElement("span");
     span.textContent = trope;
@@ -31,14 +33,19 @@ if(book.tropes){
     tropesBox.appendChild(span);
   });
 }
-document.querySelector(".playlist-link").href = book.playlist;
+const playlistLink = document.querySelector(".playlist-link");
 
-// Button logic
+if (book.playlist) {
+  playlistLink.href = book.playlist;
+} else {
+  playlistLink.style.display = "none";
+}
+
 const tbrBtn = document.querySelector(".tbr-btn");
+const recommendBtn = document.querySelector(".recommend-btn");
 const readBtn = document.querySelector(".read-btn");
 const dnfBtn = document.querySelector(".dnf-btn");
 
-// Utility functions for shelf management
 function getShelfBooks(shelfKey) {
   const stored = localStorage.getItem(shelfKey);
   return stored ? JSON.parse(stored) : [];
@@ -84,6 +91,7 @@ function addActivity(action, description) {
 // Initialize button states on page load
 function initializeButtons() {
   const isInTBR = window.shelfManager.isInTBR(book);
+  const isRecommended = isInShelf('recommendedBooks', book);
   const isRead = isInShelf('readBooks', book);
   const isDNF = isInShelf('dnf', book);
 
@@ -103,6 +111,14 @@ function initializeButtons() {
     readBtn.classList.remove('active');
   }
 
+  if (isRecommended) {
+    recommendBtn.textContent = "📢 Recommended ✓";
+    recommendBtn.classList.add('active');
+  } else {
+    recommendBtn.textContent = "📢 Recommend";
+    recommendBtn.classList.remove('active');
+  }
+
   if (isDNF) {
     dnfBtn.textContent = "DNF ✓";
     dnfBtn.classList.add('active');
@@ -112,7 +128,17 @@ function initializeButtons() {
   }
 }
 
-// TBR Button Toggle
+function updateRecommendButton() {
+  const isRecommended = isInShelf('recommendedBooks', book);
+  if (isRecommended) {
+    recommendBtn.textContent = "📢 Recommended ✓";
+    recommendBtn.classList.add('active');
+  } else {
+    recommendBtn.textContent = "📢 Recommend";
+    recommendBtn.classList.remove('active');
+  }
+}
+
 tbrBtn.addEventListener("click", () => {
   if (window.shelfManager.isInTBR(book)) {
     window.shelfManager.removeFromTBR(book);
@@ -127,20 +153,31 @@ tbrBtn.addEventListener("click", () => {
   }
 });
 
-// Read Button Toggle
+recommendBtn.addEventListener("click", () => {
+  if (isInShelf('recommendedBooks', book)) {
+    removeFromShelf('recommendedBooks', book);
+    recommendBtn.textContent = "📢 Recommend";
+    recommendBtn.classList.remove('active');
+    addActivity('removed_recommendation', `Removed recommendation for "${book.title}"`);
+  } else {
+    addToShelf('recommendedBooks', book);
+    recommendBtn.textContent = "📢 Recommended ✓";
+    recommendBtn.classList.add('active');
+    addActivity('recommended', `Recommended "${book.title}"`);
+  }
+});
+
 readBtn.addEventListener("click", () => {
   if (isInShelf('readBooks', book)) {
-    // Remove from Read
     removeFromShelf('readBooks', book);
     readBtn.textContent = "Mark as Read";
     readBtn.classList.remove('active');
     addActivity('removed_from_read', `Removed "${book.title}" from Read`);
   } else {
-    // Add to Read
     addToShelf('readBooks', book);
     readBtn.textContent = "Read ✓";
     readBtn.classList.add('active');
-    // Remove from TBR and DNF if present
+   
     window.shelfManager.removeFromTBR(book);
     removeFromShelf('dnf', book);
     tbrBtn.textContent = "Add to TBR";
@@ -151,20 +188,20 @@ readBtn.addEventListener("click", () => {
   }
 });
 
-// DNF Button Toggle
+
 dnfBtn.addEventListener("click", () => {
   if (isInShelf('dnf', book)) {
-    // Remove from DNF
+    
     removeFromShelf('dnf', book);
     dnfBtn.textContent = "Mark as DNF";
     dnfBtn.classList.remove('active');
     addActivity('removed_from_dnf', `Removed "${book.title}" from DNF`);
   } else {
-    // Add to DNF
+    
     addToShelf('dnf', book);
     dnfBtn.textContent = "DNF ✓";
     dnfBtn.classList.add('active');
-    // Remove from TBR and Read if present
+    
     window.shelfManager.removeFromTBR(book);
     removeFromShelf('readBooks', book);
     tbrBtn.textContent = "Add to TBR";
@@ -175,10 +212,10 @@ dnfBtn.addEventListener("click", () => {
   }
 });
 
-// Initialize on load
-initializeButtons();
 
-// Sample reviews with usernames and ratings
+initializeButtons();
+updateRecommendButton();
+
 const sampleReviews = [
   {
     username: "Sarah Mitchell",
@@ -207,7 +244,6 @@ const sampleReviews = [
   }
 ];
 
-// Function to generate star rating HTML
 function generateStars(rating) {
   let stars = '';
   for (let i = 1; i <= 5; i++) {
@@ -216,7 +252,6 @@ function generateStars(rating) {
   return stars;
 }
 
-// Function to generate avatar initials
 function getInitials(name) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase();
 }
@@ -305,7 +340,6 @@ submitReviewBtn.addEventListener('click', () => {
   userReviews.unshift(newReview);
   localStorage.setItem(reviewStorageKey, JSON.stringify(userReviews));
 
-  // Add to reviewed shelf
   addToShelf('reviewed', book);
   addActivity('reviewed_book', `Reviewed "${book.title}"`);
 
