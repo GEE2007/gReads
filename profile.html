@@ -100,31 +100,6 @@
 
   <script src="profile.js"></script>
   <script src="navbar.js"></script>
-  <script>
-    const profileToggle = document.getElementById('profileToggle');
-    const profileMenu = document.querySelector('.profile-menu');
-    const closeProfileMenu = () => {
-      profileMenu.classList.remove('open');
-      profileToggle.setAttribute('aria-expanded', 'false');
-    };
-
-    profileToggle.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const isOpen = profileMenu.classList.toggle('open');
-      profileToggle.setAttribute('aria-expanded', isOpen);
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!profileMenu.contains(event.target)) {
-        closeProfileMenu();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        closeProfileMenu();
-      }
-    });
-  </script>
+  
 </body>
 </html>
