@@ -1,5 +1,3 @@
-// myBooks.js - Dashboard for user's book library
-
 document.addEventListener('DOMContentLoaded', function() {
     loadMyBooksDashboard();
 });
@@ -8,13 +6,12 @@ function loadMyBooksDashboard() {
     const shelves = [
         { key: 'readBooks', title: 'Read Books', icon: 'fas fa-check-circle' },
         { key: 'recommendedBooks', title: 'Recommended', icon: 'fas fa-bullhorn' },
-        { key: 'favorites', title: 'Favorites', icon: 'fas fa-heart' },
         { key: 'reviewed', title: 'Reviewed', icon: 'fas fa-star' },
         { key: 'dnf', title: 'Did Not Finish', icon: 'fas fa-times-circle' }
     ];
 
     const content = document.getElementById('myBooksContent');
-
+    content.innerHTML = "";
     shelves.forEach(shelf => {
         const books = getShelfBooks(shelf.key);
         const section = createShelfSection(shelf, books);
@@ -96,7 +93,7 @@ function loadActivityTimeline() {
         return;
     }
 
-    activities.slice(0, 10).forEach(activity => { // Show last 10 activities
+    activities.slice(0, 10).forEach(activity => { 
         const item = document.createElement('div');
         item.className = 'activity-item';
         item.style.padding = '12px 0';
@@ -133,14 +130,20 @@ function getActivities() {
 
 function getActivityIcon(action) {
     const icons = {
-        'added_to_read': 'fas fa-check-circle',
-        'recommended': 'fas fa-bullhorn',
-        'removed_recommendation': 'fas fa-bullhorn',
-        'added_to_favorites': 'fas fa-heart',
-        'reviewed': 'fas fa-star',
-        'added_to_dnf': 'fas fa-times-circle',
-        'added_to_tbr': 'fas fa-bookmark'
-    };
+    'marked_as_read': 'fas fa-check-circle',
+    'removed_from_read': 'fas fa-check-circle',
+
+    'marked_as_dnf': 'fas fa-times-circle',
+    'removed_from_dnf': 'fas fa-times-circle',
+
+    'reviewed_book': 'fas fa-star',
+
+    'recommended': 'fas fa-bullhorn',
+    'removed_recommendation': 'fas fa-bullhorn',
+
+    'added_to_tbr': 'fas fa-bookmark',
+    'removed_from_tbr': 'fas fa-bookmark'
+};
     return icons[action] || 'fas fa-book';
 }
 
@@ -157,7 +160,7 @@ function formatTimeAgo(date) {
     return `${diffDays}d ago`;
 }
 
-// Utility functions to add books to shelves (can be called from other pages)
+
 function addToShelf(shelfKey, book) {
     const books = getShelfBooks(shelfKey);
     if (!books.find(b => b.title === book.title)) {
@@ -174,7 +177,7 @@ function addActivity(action, description) {
         description,
         timestamp: new Date().toISOString()
     });
-    // Keep only last 50 activities
+
     if (activities.length > 50) activities.splice(50);
     localStorage.setItem('activities', JSON.stringify(activities));
 }

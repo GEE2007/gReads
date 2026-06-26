@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile | gReads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="stylesheet.css" />
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="navlogo border">
+        <div class="logo"></div>
+      </div>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="genre.html">Genre</a>
+        <a href="explore.html">Explore</a>
+        <a href="#">Trending</a>
+        <a href="myBooks.html">My Books</a>
+      </nav>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search books, authors, genres..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+      <div class="profile-menu">
+        <div class="profile-icon" id="profileToggle" aria-haspopup="true" aria-expanded="false">GB</div>
+        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+          <a href="profile.html" role="menuitem">My Profile</a>
+          <a href="tbr.html" role="menuitem">TBR</a>
+          <a href="myBooks.html" role="menuitem">My Library</a>
+          <a href="#" role="menuitem">Settings</a>
+          <a href="#" role="menuitem">Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="profile-page">
+    <section class="profile-card" id="profileHeader"></section>
+
+    <section class="profile-highlights" aria-label="Reading highlights">
+      <div class="section-heading">
+        <h2>Reading identity</h2>
+        <p>A little snapshot of what keeps the bookmarks turning.</p>
+      </div>
+      <div class="highlight-grid" id="highlightsGrid"></div>
+    </section>
+
+    <div class="profile-toggle" role="tablist" aria-label="Profile content toggle">
+      <button class="toggle-btn active" data-view="reviews" role="tab" aria-selected="true">Reviews</button>
+      <button class="toggle-btn" data-view="activity" role="tab" aria-selected="false">My Reading History</button>
+    </div>
+
+    <section class="profile-feed-card">
+      <div id="activityFeed" class="feed-list" aria-live="polite"></div>
+      <div id="reviewsFeed" class="feed-list reviews-list hidden" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="socialModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Close modal">×</button>
+      <h3 id="modalTitle">Social preview</h3>
+      <p>This is a lightweight placeholder for the followers and following lists.</p>
+      <div class="modal-list">
+        <div class="modal-item">Mina • reading cozy fantasy</div>
+        <div class="modal-item">Ari • obsessed with thrillers</div>
+        <div class="modal-item">Lina • romance-first and proud</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="editProfileModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+      <button class="modal-close" id="closeEditModal" aria-label="Close edit modal">×</button>
+      <h3 id="editModalTitle">Edit profile</h3>
+      <form id="editProfileForm" class="edit-profile-form">
+        <label class="field">
+          <span>Name</span>
+          <input id="editName" name="name" type="text" required />
+        </label>
+        <label class="field">
+          <span>Username</span>
+          <input id="editUsername" name="username" type="text" required />
+        </label>
+        <label class="field">
+          <span>Bio</span>
+          <textarea id="editBio" name="bio" rows="3"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancelEditProfile">Cancel</button>
+          <button type="submit" class="primary-btn">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="profile.js"></script>
+  <script src="navbar.js"></script>
+  <script>
+    const profileToggle = document.getElementById('profileToggle');
+    const profileMenu = document.querySelector('.profile-menu');
+    const closeProfileMenu = () => {
+      profileMenu.classList.remove('open');
+      profileToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    profileToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = profileMenu.classList.toggle('open');
+      profileToggle.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!profileMenu.contains(event.target)) {
+        closeProfileMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeProfileMenu();
+      }
+    });
+  </script>
+</body>
+</html>

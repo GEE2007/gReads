@@ -128,16 +128,7 @@ function initializeButtons() {
   }
 }
 
-function updateRecommendButton() {
-  const isRecommended = isInShelf('recommendedBooks', book);
-  if (isRecommended) {
-    recommendBtn.textContent = "📢 Recommended ✓";
-    recommendBtn.classList.add('active');
-  } else {
-    recommendBtn.textContent = "📢 Recommend";
-    recommendBtn.classList.remove('active');
-  }
-}
+
 
 tbrBtn.addEventListener("click", () => {
   if (window.shelfManager.isInTBR(book)) {
@@ -214,7 +205,7 @@ dnfBtn.addEventListener("click", () => {
 
 
 initializeButtons();
-updateRecommendButton();
+
 
 const sampleReviews = [
   {
@@ -261,7 +252,7 @@ function formatReviewDate(dateString) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-const reviewStorageKey = `geeReads-reviews-${book.title}`;
+const reviewStorageKey = `gReads-reviews-${book.title}`;
 let userReviews = JSON.parse(localStorage.getItem(reviewStorageKey)) || [];
 
 const reviewsContainer = document.querySelector(".reviews-container");
