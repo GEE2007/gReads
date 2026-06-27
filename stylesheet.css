@@ -6,6 +6,38 @@ body {
     color: #4b3f3f;
     font-family: 'Arial', sans-serif;
 }
+
+body.dark-theme {
+    background: radial-gradient(circle at top left, rgba(72, 58, 84, 0.5), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(95, 78, 122, 0.4), transparent 30%),
+                linear-gradient(180deg, #1f1b22 0%, #241f2c 55%, #151219 100%);
+    color: #f4eef2;
+}
+
+body.dark-theme .navbar {
+    background-color: #2c2630;
+    border-color: #372f3b;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .navlinks a,
+body.dark-theme .search-bar,
+body.dark-theme .profile-icon {
+    color: #f4eef2;
+}
+
+body.dark-theme .search-container {
+    background-color: #2d2734;
+    border-color: #3d3645;
+}
+
+body.dark-theme .profile-dropdown {
+    background: #2b2432;
+}
+
+body.dark-theme .profile-dropdown a:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
 .navbar {
     height: 58px;
     background-color: #fff2f5;

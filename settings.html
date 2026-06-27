@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings | gReads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="stylesheet.css" />
+  <link rel="stylesheet" href="profile.css" />
+  <style>
+    body.settings-page {
+      background: linear-gradient(180deg, #fffaf7 0%, #f7f0f3 100%);
+      color: #33292d;
+    }
+
+    body.dark-theme {
+      background: #1f1b22;
+      color: #f4eef2;
+    }
+
+    body.dark-theme .navbar {
+      background-color: #2c2630;
+      border-color: #372f3b;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-theme .navlinks a,
+    body.dark-theme .search-bar,
+    body.dark-theme .profile-icon {
+      color: #f4eef2;
+    }
+
+    body.dark-theme .search-container {
+      background-color: #2d2734;
+      border-color: #3d3645;
+    }
+
+    body.dark-theme .profile-dropdown {
+      background: #2b2432;
+    }
+
+    body.dark-theme .profile-dropdown a:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    main.settings-content {
+      max-width: 640px;
+      margin: 36px auto 56px;
+      padding: 0 20px;
+    }
+
+    .settings-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(112, 88, 98, 0.12);
+      border-radius: 28px;
+      box-shadow: 0 18px 36px rgba(110, 84, 95, 0.08);
+      padding: 36px 32px;
+      min-height: 320px;
+    }
+
+    body.dark-theme .settings-card {
+      background: #2c2431;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .settings-card h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      color: #3f2f37;
+    }
+
+    body.dark-theme .settings-card h1 {
+      color: #f4eef2;
+    }
+
+    .settings-card p {
+      margin: 0 0 24px;
+      color: #5f4f55;
+      line-height: 1.7;
+    }
+
+    body.dark-theme .settings-card p {
+      color: #dcd0d6;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .setting-row label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-width: 220px;
+      color: #5f4f55;
+    }
+
+    body.dark-theme .setting-row label {
+      color: #dcd0d6;
+    }
+
+    .setting-row small {
+      display: block;
+      color: #7f7076;
+      font-size: 0.95rem;
+    }
+
+    body.dark-theme .setting-row small {
+      color: #b7a7b0;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 32px;
+      border-radius: 999px;
+      background: #f1d7e0;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+    }
+
+    body.dark-theme .toggle-switch {
+      background: #584a58;
+    }
+
+    .toggle-switch input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .toggle-handle {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+    }
+
+    input:checked + .toggle-handle {
+      transform: translateX(28px);
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 14px;
+    }
+
+    .settings-note {
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: #8c7480;
+    }
+
+    body.dark-theme .settings-note {
+      color: #b7a7b0;
+    }
+
+    @media (max-width: 680px) {
+      .setting-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .settings-actions {
+        justify-content: stretch;
+      }
+    }
+  </style>
+</head>
+<body class="settings-page">
+  <header>
+    <div class="navbar">
+      <div class="navlogo border">
+        <div class="logo"></div>
+      </div>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="genre.html">Genre</a>
+        <a href="explore.html">Explore</a>
+        <a href="#">Trending</a>
+        <a href="myBooks.html">My Books</a>
+      </nav>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search books, authors, genres..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+      <div class="profile-menu">
+        <div class="profile-icon" id="profileToggle" aria-haspopup="true" aria-expanded="false">GB</div>
+        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+          <a href="profile.html" role="menuitem">My Profile</a>
+          <a href="tbr.html" role="menuitem">TBR</a>
+          <a href="settings.html" role="menuitem">Settings</a>
+          <a href="#" role="menuitem">Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="settings-content">
+    <section class="settings-card">
+      <h1>Settings</h1>
+      <p>Control your local preferences and clear stored app data. Your theme choice is saved automatically.</p>
+
+      <div class="setting-row">
+        <label for="themeToggle">
+          <span>App theme</span>
+          <small>Toggle between light and dark appearance for gReads.</small>
+        </label>
+        <div class="toggle-switch">
+          <input id="themeToggle" type="checkbox" aria-label="Theme toggle" />
+          <span class="toggle-handle"></span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label>
+          <span>Clear all local app data</span>
+          <small>Remove stored reviews, shelves, activities and selected book state.</small>
+        </label>
+        <button id="clearDataBtn" class="secondary-btn">Clear data</button>
+      </div>
+
+      <div class="settings-actions">
+        <button id="backBtn" class="primary-btn">Back to Profile</button>
+      </div>
+
+      <p class="settings-note">This page only affects localStorage data stored in your browser under gReads and shelf keys.</p>
+    </section>
+  </main>
+
+  <script src="navbar.js"></script>
+  <script src="theme.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

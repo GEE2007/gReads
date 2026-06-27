@@ -48,9 +48,19 @@ if (book.tropes && Array.isArray(book.tropes)) {
 }
 const playlistLink = document.querySelector(".playlist-link");
 
-if (book.playlist) {
-  playlistLink.href = book.playlist;
-} else {
+function generatePlaylistLink(book) {
+  if (!book || !book.title) return null;
+
+  return `https://open.spotify.com/search/${encodeURIComponent(
+    book.title + " playlist"
+  )}`;
+}
+
+const playlistURL = book.playlist || generatePlaylistLink(book);
+
+if (playlistLink && playlistURL) {
+  playlistLink.href = playlistURL;
+} else if (playlistLink) {
   playlistLink.style.display = "none";
 }
 
