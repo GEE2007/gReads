@@ -14,9 +14,55 @@ const defaultProfileData = {
 
 const profileImageKey = 'gReads-profile-image';
 
+function migrateLegacyGeeReadsKeys() {
+  Object.keys(localStorage).forEach((key) => {
+    if (!key.startsWith('geeReads')) return;
+    const newKey = 'gReads' + key.slice('geeReads'.length);
+    if (localStorage.getItem(newKey) == null) {
+      localStorage.setItem(newKey, localStorage.getItem(key));
+    }
+    localStorage.removeItem(key);
+  });
+}
+
+function safeParseStorage(key, fallback = {}) {
+  const rawValue = localStorage.getItem(key);
+  if (!rawValue) return fallback;
+
+  try {
+    const parsedValue = JSON.parse(rawValue);
+    return parsedValue ?? fallback;
+  } catch (error) {
+    console.warn(`Could not parse localStorage key "${key}"`, error);
+    return fallback;
+  }
+}
+
+function safeNumber(value, fallback = 0) {
+  const parsedValue = Number(value);
+  return Number.isFinite(parsedValue) ? parsedValue : fallback;
+}
+
+function normalizeRating(value) {
+  const numericValue = safeNumber(value, 0);
+  return Math.min(5, Math.max(0, numericValue));
+}
+
+function normalizeTimestamp(value) {
+  if (!value) return null;
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
+function normalizeText(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+migrateLegacyGeeReadsKeys();
+
 let profileData = {
   ...defaultProfileData,
-  ...JSON.parse(localStorage.getItem('gReads-profile') || 'null')
+  ...safeParseStorage('gReads-profile', {})
 };
 
 const header = document.getElementById('profileHeader');
@@ -48,7 +94,7 @@ const bookCoverMap = {
   'the summer i turned pretty': 'images/summerITurnedpretty.png',
   'powerless': 'images/powerless.png',
   'the 48 laws of power': 'images/power.png',
-  'no excuses': 'images/noExcuses.png',
+  'no excuses': 'Fimages/noExcuses.png',
   'we\'ll always have summer': 'images/alwaysHaveSummer.png'
 };
 
@@ -109,15 +155,19 @@ function applyAvatarImage(source, { animate = true, persist = true } = {}) {
 }
 
 function getDerivedStats() {
-  const readBooks = JSON.parse(localStorage.getItem('readBooks') || '[]');
+  const readBooks = getReadBooks();
   const reviewEntries = getStoredReviews();
-  const ratings = reviewEntries.map((entry) => Number(entry.rating)).filter((value) => !Number.isNaN(value));
-  const avgRating = ratings.length ? (ratings.reduce((sum, score) => sum + score, 0) / ratings.length).toFixed(1) : '4.6';
+  const ratings = reviewEntries
+    .map((entry) => normalizeRating(entry.rating))
+    .filter((value) => value > 0);
+  const avgRating = ratings.length
+    ? ratings.reduce((sum, score) => sum + score, 0) / ratings.length
+    : 0;
 
   return {
-    booksRead: readBooks.length || profileData.stats.booksRead,
-    reviewsWritten: reviewEntries.length || profileData.stats.reviewsWritten,
-    avgRating: `${avgRating}/5`
+    booksRead: readBooks.length,
+    reviewsWritten: reviewEntries.length,
+    avgRating: `${avgRating.toFixed(1)}/5`
   };
 }
 
@@ -145,149 +195,204 @@ function getBookAuthor(title) {
 }
 
 function extractBookTitle(text) {
-  const match = text.match(/"([^"]+)"/);
+  const safeText = normalizeText(text, '');
+  const match = safeText.match(/"([^"]+)"/);
   if (match) return match[1];
-  const fallback = text.split(' ').slice(-2).join(' ');
+  const fallback = safeText.split(' ').slice(-2).join(' ');
   return fallback || 'Your latest read';
 }
 
 function getStoredReviews() {
   const reviewEntries = [];
-  Object.keys(localStorage).forEach((key) => {
+  const allKeys = Object.keys(localStorage);
+  const reviewKeys = allKeys.filter((key) => key.startsWith('gReads-reviews-'));
+  console.log('profile.js getStoredReviews', { allKeys, reviewKeys });
+
+  allKeys.forEach((key) => {
     if (!key.startsWith('gReads-reviews-')) return;
-    try {
-      const bookTitle = key.replace('gReads-reviews-', '');
-      const storedReviews = JSON.parse(localStorage.getItem(key) || '[]');
-      storedReviews.forEach((review) => {
-        reviewEntries.push({
-          title: bookTitle,
-          rating: review.rating,
-          review: review.text,
-          username: review.username || 'You',
-          date: review.date,
-          author: getBookAuthor(bookTitle),
-          image: getBookCover(bookTitle)
-        });
+
+    const storedReviews = safeParseStorage(key, []);
+    if (!Array.isArray(storedReviews)) return;
+
+    const bookTitle = key.replace('gReads-reviews-', '');
+    storedReviews.forEach((review) => {
+      reviewEntries.push({
+        title: bookTitle,
+        rating: normalizeRating(review?.rating),
+        review: normalizeText(review?.text, ''),
+        username: normalizeText(review?.username, 'You') || 'You',
+        date: review?.date || null,
+        author: getBookAuthor(bookTitle),
+        image: getBookCover(bookTitle)
       });
-    } catch (error) {
-      console.warn('Could not parse review data', error);
-    }
+    });
   });
   return reviewEntries;
 }
 
 function getReadBooks() {
-  const readBooks = JSON.parse(localStorage.getItem('readBooks') || '[]');
+  const readBooks = safeParseStorage('readBooks', []);
   return Array.isArray(readBooks) ? readBooks.filter((book) => book && typeof book === 'object') : [];
+}
+
+function getBookGenres(book) {
+  if (!book) return [];
+  const rawGenres = Array.isArray(book.genre)
+    ? book.genre
+    : typeof book.genre === 'string' && book.genre.trim()
+      ? [book.genre]
+      : [];
+
+  return rawGenres
+    .map((genre) => (typeof genre === 'string' ? genre.trim() : ''))
+    .filter(Boolean);
+}
+
+function getPageCount(book) {
+  const rawValue = book?.pages ?? book?.pageCount ?? book?.page_count ?? book?.length;
+  const parsedValue = Number(rawValue);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null;
 }
 
 function getDerivedHighlights() {
   const readBooks = getReadBooks();
   const reviewEntries = getStoredReviews();
-  const activityEntries = JSON.parse(localStorage.getItem('activities') || '[]');
+  const ratings = reviewEntries.map((entry) => normalizeRating(entry.rating)).filter((value) => value > 0);
+  const averageRating = ratings.length
+    ? ratings.reduce((sum, score) => sum + score, 0) / ratings.length
+    : 0;
 
   const genreCounts = {};
   const authorCounts = {};
-  const ratings = reviewEntries.map((entry) => Number(entry.rating)).filter((value) => !Number.isNaN(value));
+  const ratingCounts = {};
+  const genreRatingTotals = {};
+  const genreRatingCounts = {};
+  const monthCounts = {};
+  const bookPageCounts = [];
 
   readBooks.forEach((book) => {
-    const genres = Array.isArray(book.genre)
-      ? book.genre
-      : typeof book.genre === 'string' && book.genre.trim()
-        ? [book.genre]
-        : [];
-
+    const genres = getBookGenres(book);
     genres.forEach((genre) => {
-      const normalized = genre.trim();
-      if (!normalized) return;
-      genreCounts[normalized] = (genreCounts[normalized] || 0) + 1;
+      genreCounts[genre] = (genreCounts[genre] || 0) + 1;
     });
 
-    if (book.author) {
-      const normalizedAuthor = book.author.trim();
+    const normalizedAuthor = normalizeText(book?.author, '');
+    if (normalizedAuthor) {
       authorCounts[normalizedAuthor] = (authorCounts[normalizedAuthor] || 0) + 1;
     }
+
+    const pageCount = getPageCount(book);
+    if (pageCount) {
+      bookPageCounts.push({ title: normalizeText(book?.title, 'Untitled book'), pages: pageCount });
+    }
+
+    const timestamp = normalizeTimestamp(book?.timestamp || book?.date || book?.addedAt);
+    if (timestamp) {
+      const date = new Date(timestamp);
+      const monthKey = date.toLocaleString('en', { month: 'long' });
+      monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
+    }
+  });
+
+  reviewEntries.forEach((entry) => {
+    const ratingValue = normalizeRating(entry.rating);
+    if (ratingValue > 0) {
+      ratingCounts[ratingValue] = (ratingCounts[ratingValue] || 0) + 1;
+    }
+
+    const matchingBook = readBooks.find((book) => normalizeText(book?.title, '').toLowerCase() === normalizeText(entry.title, '').toLowerCase());
+    if (!matchingBook) return;
+
+    const genres = getBookGenres(matchingBook);
+    genres.forEach((genre) => {
+      genreRatingTotals[genre] = (genreRatingTotals[genre] || 0) + ratingValue;
+      genreRatingCounts[genre] = (genreRatingCounts[genre] || 0) + 1;
+    });
   });
 
   const favoriteGenres = Object.entries(genreCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
+    .slice(0, 5)
     .map(([genre]) => genre);
 
-  const topAuthors = Object.entries(authorCounts)
+  const favoriteAuthors = Object.entries(authorCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
+    .slice(0, 5)
     .map(([author]) => author);
 
-  const averageRating = ratings.length
-    ? ratings.reduce((sum, score) => sum + score, 0) / ratings.length
-    : null;
+  const highestRatedGenre = Object.entries(genreRatingTotals)
+    .map(([genre, total]) => ({
+      genre,
+      average: total / (genreRatingCounts[genre] || 1)
+    }))
+    .sort((a, b) => b.average - a.average)[0];
+
+  const favoriteRating = Object.entries(ratingCounts)
+    .sort((a, b) => b[1] - a[1] || Number(a[0]) - Number(b[0]))[0];
+
+  const longestBook = bookPageCounts
+    .slice()
+    .sort((a, b) => b.pages - a.pages)[0];
+
+  const mostActiveMonth = Object.entries(monthCounts)
+    .sort((a, b) => b[1] - a[1])[0];
 
   let styleLabel = 'Balanced';
-  if (averageRating === null) {
-    styleLabel = 'Start reading to build your profile';
+  if (averageRating === 0) {
+    styleLabel = 'Add reviews to discover your style';
   } else if (averageRating >= 4.3) {
     styleLabel = 'Generous rater';
   } else if (averageRating <= 3.4) {
     styleLabel = 'Strict rater';
   }
 
-  const timestampEntries = [
-    ...readBooks.map((book) => book.timestamp || book.date || book.addedAt).filter(Boolean),
-    ...activityEntries.map((entry) => entry.timestamp).filter(Boolean),
-    ...reviewEntries.map((entry) => entry.date).filter(Boolean)
-  ];
-
-  let activePeriod = '';
-  if (timestampEntries.length) {
-    const monthCounts = {};
-    timestampEntries.forEach((value) => {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return;
-      const monthKey = date.toLocaleString('en', { month: 'long' });
-      monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
-    });
-
-    const topMonth = Object.entries(monthCounts).sort((a, b) => b[1] - a[1])[0];
-    if (topMonth) {
-      activePeriod = `${topMonth[0]} was your busiest reading month`;
-    }
-  }
-
   const cards = [];
   cards.push({
-    title: 'Favorite genres',
-    items: favoriteGenres.length ? favoriteGenres : ['Start reading to build your profile']
+    title: 'Favorite Genres',
+    items: favoriteGenres.length ? favoriteGenres : ['Read more books to discover your favorite genre.']
   });
 
   cards.push({
-    title: 'Top authors',
-    items: topAuthors.length ? topAuthors : ['No favorite authors yet']
+    title: 'Favorite Authors',
+    items: favoriteAuthors.length ? favoriteAuthors : ['No favorite author yet.']
   });
 
   cards.push({
-    title: 'Reading style',
-    items: averageRating === null
-      ? ['Add a rating to reveal your taste']
-      : [`${styleLabel} · ${averageRating.toFixed(1)}/5`, activePeriod].filter(Boolean)
+    title: 'Reading Stats',
+    items: [
+      `Total books read: ${readBooks.length}`,
+      averageRating === 0 ? 'Average rating given: No reviews yet' : `Average rating given: ${averageRating.toFixed(1)}/5`,
+      highestRatedGenre ? `Highest rated genre: ${highestRatedGenre.genre}` : 'Highest rated genre: Not enough data yet',
+      favoriteAuthors[0] ? `Most frequently read author: ${favoriteAuthors[0]}` : 'Most frequently read author: Not enough data yet'
+    ]
+  });
+
+  cards.push({
+    title: 'Reading Habits',
+    items: [
+      favoriteRating ? `Favorite rating: ${favoriteRating[0]}/5` : 'Favorite rating: No ratings yet',
+      longestBook ? `Longest book read: ${longestBook.title} (${longestBook.pages} pages)` : 'Longest book read: Add page counts to see this',
+      mostActiveMonth ? `Most active reading month: ${mostActiveMonth[0]}` : 'Most active reading month: Add timestamps to see this',
+      `Average rating style: ${styleLabel}`
+    ]
   });
 
   return cards;
 }
 
 function getFeedItems() {
-  const activityEntries = JSON.parse(localStorage.getItem('activities') || '[]');
+  const activityEntries = safeParseStorage('activities', []);
   const reviewEntries = getStoredReviews();
 
   const mappedActivities = activityEntries.map((entry) => {
-    const title = extractBookTitle(entry.description || entry.action || '');
+    const title = extractBookTitle(entry?.description || entry?.action || '');
     let actionLabel = 'updated their shelves';
-    if (entry.action === 'reviewed_book') actionLabel = 'reviewed this book';
-    else if (entry.action === 'marked_as_read') actionLabel = 'marked as read';
-    else if (entry.action === 'marked_as_dnf') actionLabel = 'marked as DNF';
-    else if (entry.action === 'added_to_tbr') actionLabel = 'added to TBR';
-    else if (entry.action === 'recommended') actionLabel = 'recommended this book';
-    else if (entry.description) actionLabel = entry.description;
+    if (entry?.action === 'reviewed_book') actionLabel = 'reviewed this book';
+    else if (entry?.action === 'marked_as_read') actionLabel = 'marked as read';
+    else if (entry?.action === 'marked_as_dnf') actionLabel = 'marked as DNF';
+    else if (entry?.action === 'added_to_tbr') actionLabel = 'added to TBR';
+    else if (entry?.action === 'recommended') actionLabel = 'recommended this book';
+    else if (entry?.description) actionLabel = entry.description;
 
     return {
       title,
@@ -295,8 +400,9 @@ function getFeedItems() {
       image: getBookCover(title),
       actionLabel,
       rating: null,
-      text: entry.description || '',
-      time: formatRelativeTime(entry.timestamp)
+      text: normalizeText(entry?.description, ''),
+      time: formatRelativeTime(entry?.timestamp),
+      sortTime: normalizeTimestamp(entry?.timestamp)
     };
   });
 
@@ -307,11 +413,12 @@ function getFeedItems() {
     actionLabel: review.username === 'You' ? 'shared a review' : 'reviewed this book',
     rating: review.rating,
     text: review.review,
-    time: formatRelativeTime(review.date)
+    time: formatRelativeTime(review.date),
+    sortTime: normalizeTimestamp(review.date)
   }));
 
   return [...mappedReviews, ...mappedActivities]
-    .sort((a, b) => new Date(b.sortTime || b.time) - new Date(a.sortTime || a.time))
+    .sort((a, b) => (b.sortTime || 0) - (a.sortTime || 0))
     .slice(0, 8);
 }
 
@@ -442,6 +549,13 @@ function renderHighlights() {
   `).join('');
 }
 
+function renderStars(rating) {
+  const safeRating = normalizeRating(rating);
+  const roundedRating = Math.round(safeRating);
+  const fullStars = Math.max(0, Math.min(5, roundedRating));
+  return `${'★'.repeat(fullStars)}${'☆'.repeat(5 - fullStars)}`;
+}
+
 function renderActivities() {
   const feedItems = getFeedItems();
   activityFeed.innerHTML = feedItems.map((activity) => `
@@ -455,7 +569,7 @@ function renderActivities() {
           <span>${activity.time}</span>
         </div>
         <p class="activity-action">${activity.actionLabel}</p>
-        ${activity.rating ? `<p class="activity-rating">${'★'.repeat(Math.round(activity.rating))} ${activity.rating.toFixed(1)}</p>` : ''}
+        ${activity.rating ? `<p class="activity-rating">${renderStars(activity.rating)} ${normalizeRating(activity.rating).toFixed(1)}</p>` : ''}
         ${activity.text ? `<p class="activity-text">“${activity.text}”</p>` : ''}
         <div class="activity-actions">
           <button type="button"><i class="far fa-heart"></i> Like</button>
@@ -473,7 +587,7 @@ function renderReviews() {
       <div class="review-card-top">
         <div>
           <h3>${review.title}</h3>
-          <p class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
+          <p class="review-stars">${renderStars(review.rating)}</p>
         </div>
         <div class="review-actions">
           <button type="button">Edit</button>
@@ -522,12 +636,16 @@ function closeEditProfileModal() {
   editProfileModal.setAttribute('aria-hidden', 'true');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  bindAvatarInteractions();
+function refreshProfileContent() {
   renderHeader();
   renderHighlights();
   renderActivities();
   renderReviews();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  bindAvatarInteractions();
+  refreshProfileContent();
   switchView('reviews');
 
   toggleButtons.forEach((button) => {
@@ -544,6 +662,15 @@ document.addEventListener('DOMContentLoaded', () => {
       closeSocialModal();
     }
   });
+
+  window.addEventListener('storage', (event) => {
+    if (!event.key || ['readBooks', 'activities', 'gReads-profile'].includes(event.key) || event.key.startsWith('gReads-reviews-')) {
+      refreshProfileContent();
+    }
+  });
+
+  window.addEventListener('focus', refreshProfileContent);
+  window.addEventListener('bookshelf:updated', refreshProfileContent);
 
   closeEditModal.addEventListener('click', closeEditProfileModal);
   cancelEditProfile.addEventListener('click', closeEditProfileModal);

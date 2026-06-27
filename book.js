@@ -4,6 +4,19 @@ if (!book) {
   window.location.href = "index.html";
 }
 
+function migrateLegacyGeeReadsKeys() {
+  Object.keys(localStorage).forEach((key) => {
+    if (!key.startsWith('geeReads')) return;
+    const newKey = 'gReads' + key.slice('geeReads'.length);
+    if (localStorage.getItem(newKey) == null) {
+      localStorage.setItem(newKey, localStorage.getItem(key));
+    }
+    localStorage.removeItem(key);
+  });
+}
+
+migrateLegacyGeeReadsKeys();
+
 const img = document.querySelector(".book-img");
 const title = document.querySelector(".book-title");
 const desc = document.querySelector(".book-desc");
@@ -330,6 +343,7 @@ submitReviewBtn.addEventListener('click', () => {
 
   userReviews.unshift(newReview);
   localStorage.setItem(reviewStorageKey, JSON.stringify(userReviews));
+  console.log('book.js saved review', { reviewStorageKey, allKeys: Object.keys(localStorage) });
 
   addToShelf('reviewed', book);
   addActivity('reviewed_book', `Reviewed "${book.title}"`);
